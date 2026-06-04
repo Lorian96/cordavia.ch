@@ -100,53 +100,6 @@ export default function PreisePage() {
           </div>
         </section>
 
-        {/* Krankenkassen-Info */}
-        <section className="py-16 bg-white">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-black text-navy-900 mb-6">
-              Krankenkassen-Abrechnung
-            </h2>
-            <div className="space-y-4 text-lg text-navy-800/85 leading-relaxed">
-              <p>
-                Bei medizinisch indizierten Fahrten kann ein Teil der Kosten über
-                die Krankenkasse abgerechnet werden — wir kümmern uns für Sie um
-                die gesamte Abrechnung.
-              </p>
-              <p>
-                <strong>Voraussetzung:</strong> Eine ärztliche Verordnung. Sie müssen sich
-                um nichts weiter kümmern.
-              </p>
-              <ul className="space-y-2 my-6">
-                <li className="flex items-start gap-3">
-                  <Check className="h-6 w-6 text-teal-500 shrink-0 mt-0.5" />
-                  <span>Fahrten zu Arzt, Klinik, Dialyse oder Therapie</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-6 w-6 text-teal-500 shrink-0 mt-0.5" />
-                  <span>Reha- und Therapiefahrten</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-6 w-6 text-teal-500 shrink-0 mt-0.5" />
-                  <span>Wir reichen die Abrechnung direkt bei Ihrer Kasse ein</span>
-                </li>
-              </ul>
-              <div className="bg-teal-50 border border-teal-200 rounded-xl p-5 text-base">
-                <p className="font-semibold text-navy-900 mb-1">Fragen zur Abrechnung?</p>
-                <p className="text-navy-800/85">
-                  Rufen Sie uns an unter{" "}
-                  <a
-                    href={`tel:${PHONE_TEL}`}
-                    className="text-teal-700 font-bold underline whitespace-nowrap"
-                  >
-                    {PHONE_DISPLAY}
-                  </a>
-                  {" "}— wir beraten Sie kostenlos.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* CTA */}
         <section className="bg-navy-900 text-white py-16">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
