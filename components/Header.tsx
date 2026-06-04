@@ -2,6 +2,14 @@ import Link from "next/link";
 import { Phone } from "./icons";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
+const NAV_ITEMS = [
+  { href: "/#leistungen", label: "Leistungen" },
+  { href: "/preise", label: "Preise" },
+  { href: "/#regionen", label: "Regionen" },
+  { href: "/#buchung", label: "Buchung" },
+  { href: "/#kontakt", label: "Kontakt" },
+];
+
 export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-navy-50">
@@ -16,22 +24,16 @@ export function Header() {
           <span className="hidden sm:inline">Cordavia</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-lg font-medium text-navy-800">
-          <a href="#leistungen" className="hover:text-teal-500 transition">
-            Leistungen
-          </a>
-          <a href="#regionen" className="hover:text-teal-500 transition">
-            Regionen
-          </a>
-          <a href="#buchung" className="hover:text-teal-500 transition">
-            Buchung
-          </a>
-          <a href="#vertrauen" className="hover:text-teal-500 transition">
-            Über uns
-          </a>
-          <a href="#kontakt" className="hover:text-teal-500 transition">
-            Kontakt
-          </a>
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-base lg:text-lg font-medium text-navy-800">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="hover:text-teal-500 transition"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <a

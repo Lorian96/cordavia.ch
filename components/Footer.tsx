@@ -71,8 +71,13 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="font-bold text-lg mb-4">Rechtliches</h3>
+          <h3 className="font-bold text-lg mb-4">Info</h3>
           <ul className="space-y-2 text-navy-50/80">
+            <li>
+              <Link href="/preise" className="hover:text-teal-300 transition">
+                Preise
+              </Link>
+            </li>
             <li>
               <Link href="/impressum" className="hover:text-teal-300 transition">
                 Impressum
