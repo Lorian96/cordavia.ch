@@ -160,7 +160,14 @@ function BookingRow({ booking: b }: { booking: Booking }) {
           <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
             <Row label="Kunde" value={`${b.first_name} ${b.last_name}`} />
             <Row label="Tel" value={<a href={`tel:${b.phone}`} className="text-teal-600 hover:underline">{b.phone}</a>} />
-            <Row label="E-Mail" value={<a href={`mailto:${b.email}`} className="text-teal-600 hover:underline">{b.email}</a>} />
+            <Row
+              label="E-Mail"
+              value={
+                b.email && b.email.length > 0
+                  ? <a href={`mailto:${b.email}`} className="text-teal-600 hover:underline">{b.email}</a>
+                  : <span className="text-navy-800/40">—</span>
+              }
+            />
             <Row label="Status" value={STATUS_LABELS[b.status]} />
             <Row label="Abholung" value={b.pickup} full />
             <Row label="Ziel" value={b.destination} full />

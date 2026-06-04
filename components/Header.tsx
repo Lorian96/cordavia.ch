@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Phone } from "./icons";
+import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
 export function Header() {
   return (
@@ -19,6 +20,9 @@ export function Header() {
           <a href="#leistungen" className="hover:text-teal-500 transition">
             Leistungen
           </a>
+          <a href="#regionen" className="hover:text-teal-500 transition">
+            Regionen
+          </a>
           <a href="#buchung" className="hover:text-teal-500 transition">
             Buchung
           </a>
@@ -31,12 +35,13 @@ export function Header() {
         </nav>
 
         <a
-          href="tel:+4900000000000"
+          href={`tel:${PHONE_TEL}`}
           className="inline-flex items-center gap-2 rounded-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-5 py-3 text-base sm:text-lg transition shadow-md"
-          aria-label="Jetzt anrufen"
+          aria-label={`Jetzt anrufen ${PHONE_DISPLAY}`}
         >
           <Phone className="h-5 w-5" />
-          <span className="hidden sm:inline">24h Hotline</span>
+          <span className="hidden lg:inline">{PHONE_DISPLAY}</span>
+          <span className="hidden sm:inline lg:hidden">24h Hotline</span>
           <span className="sm:hidden">Anrufen</span>
         </a>
       </div>

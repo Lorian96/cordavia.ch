@@ -1,4 +1,5 @@
-import { Phone, WhatsApp, Calendar, Shield, Clock, Check } from "./icons";
+import { Phone, WhatsApp, Calendar, Shield, HeartPulse, Check } from "./icons";
+import { PHONE_DISPLAY, PHONE_TEL, PHONE_WHATSAPP, SERVICE_REGION_LABEL } from "@/lib/contact";
 
 export function Hero() {
   return (
@@ -11,19 +12,21 @@ export function Hero() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/15 border border-teal-400/30 px-4 py-2 text-teal-300 font-medium mb-6">
             <Shield className="h-5 w-5" />
-            <span>Zertifiziert · DSGVO-konform · Versichert</span>
+            <span>Krankenkassen-anerkannt · Geschultes Personal · Versichert</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-6">
-            Wir kümmern uns.{" "}
-            <span className="text-teal-300">Auf jedem Weg.</span>
+            Wir begleiten Sie –{" "}
+            <span className="text-teal-300">nicht nur fahren wir Sie.</span>
           </h1>
 
           <p className="text-xl sm:text-2xl text-navy-50/90 mb-3 leading-relaxed">
-            Krankenfahrten · Liegendtransporte · Rollstuhltransporte · Taxi.
+            Krankenfahrten · Liegendtransporte · Rollstuhltransporte
           </p>
-          <p className="text-lg sm:text-xl text-navy-50/80 mb-8 leading-relaxed">
-            24 Stunden erreichbar. Pünktlich. Zuverlässig. Komfortabel.
+          <p className="text-base sm:text-lg text-navy-50/70 mb-8 leading-relaxed">
+            Medizinischer Transportdienst in {SERVICE_REGION_LABEL}.
+            <br />
+            Mit Ruhe, Erfahrung und Respekt – rund um die Uhr für Sie da.
           </p>
 
           <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10 text-lg">
@@ -33,15 +36,15 @@ export function Hero() {
             </li>
             <li className="flex items-center gap-3">
               <Check className="h-6 w-6 text-teal-300 shrink-0" />
-              <span>Barrierefreie Fahrzeuge</span>
+              <span>Zertifizierte Rückhaltesysteme</span>
             </li>
             <li className="flex items-center gap-3">
               <Check className="h-6 w-6 text-teal-300 shrink-0" />
-              <span>Geschultes Personal</span>
+              <span>Medizinisch geschultes Personal</span>
             </li>
             <li className="flex items-center gap-3">
               <Check className="h-6 w-6 text-teal-300 shrink-0" />
-              <span>Bundesweit & rund um die Uhr</span>
+              <span>Hublift & barrierefreie Fahrzeuge</span>
             </li>
           </ul>
 
@@ -51,17 +54,17 @@ export function Hero() {
               className="inline-flex items-center justify-center gap-2 rounded-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-7 py-4 text-lg sm:text-xl shadow-lg transition"
             >
               <Calendar className="h-6 w-6" />
-              Fahrt jetzt buchen
+              Fahrt anfragen
             </a>
             <a
-              href="tel:+4900000000000"
+              href={`tel:${PHONE_TEL}`}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-white hover:bg-navy-50 text-navy-900 font-bold px-7 py-4 text-lg sm:text-xl shadow-lg transition"
             >
               <Phone className="h-6 w-6" />
-              Sofort anrufen
+              {PHONE_DISPLAY}
             </a>
             <a
-              href="https://wa.me/4900000000000"
+              href={`https://wa.me/${PHONE_WHATSAPP}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold px-7 py-4 text-lg sm:text-xl shadow-lg transition"
@@ -78,20 +81,20 @@ export function Hero() {
             <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 shadow-2xl">
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-14 w-14 rounded-full bg-teal-500 flex items-center justify-center">
-                  <Clock className="h-7 w-7 text-navy-950" />
+                  <HeartPulse className="h-7 w-7 text-navy-950" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold">24/7 Service</div>
+                  <div className="text-2xl font-bold">Medizinischer Transport</div>
                   <div className="text-navy-50/70">
-                    Buchung in unter 60 Sekunden
+                    Mit Herz und Erfahrung
                   </div>
                 </div>
               </div>
               <div className="space-y-4 text-lg">
-                <Row label="Krankenfahrten" value="Alle Kassen" />
-                <Row label="Liegendtransporte" value="Fachpersonal" />
-                <Row label="Rollstuhltransporte" value="Barrierefrei" />
-                <Row label="Taxi-Service" value="Stadt & Umland" />
+                <Row label="Krankenfahrten" value="Mit Kassen-Abrechnung" />
+                <Row label="Liegendtransporte" value="Fachpersonal an Bord" />
+                <Row label="Rollstuhltransporte" value="Hublift · Sicher fixiert" />
+                <Row label="Taxi-Service" value="Als Zusatzleistung" />
               </div>
             </div>
           </div>

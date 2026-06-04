@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { Phone, WhatsApp } from "./icons";
+import { PHONE_DISPLAY, PHONE_TEL, PHONE_WHATSAPP, EMAIL, SERVICE_CANTONS } from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -15,8 +17,9 @@ export function Footer() {
             <span className="text-xl font-bold">Cordavia</span>
           </div>
           <p className="text-navy-50/80 leading-relaxed">
-            Wir kümmern uns — auf jedem Weg.
-            <br />Krankenfahrten, Liegendtransporte, Rollstuhltransporte und Taxi-Service.
+            Medizinischer Transportdienst.
+            <br />
+            Wir begleiten Sie – nicht nur fahren wir Sie.
           </p>
         </div>
 
@@ -25,16 +28,16 @@ export function Footer() {
           <ul className="space-y-3 text-navy-50/90">
             <li>
               <a
-                href="tel:+4900000000000"
+                href={`tel:${PHONE_TEL}`}
                 className="flex items-center gap-3 hover:text-teal-300 transition"
               >
                 <Phone className="h-5 w-5" />
-                <span>+49 000 000 000 00</span>
+                <span>{PHONE_DISPLAY}</span>
               </a>
             </li>
             <li>
               <a
-                href="https://wa.me/4900000000000"
+                href={`https://wa.me/${PHONE_WHATSAPP}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 hover:text-teal-300 transition"
@@ -43,17 +46,27 @@ export function Footer() {
                 <span>WhatsApp Chat</span>
               </a>
             </li>
-            <li className="text-navy-50/80">info@cordavia.ch</li>
+            <li>
+              <a
+                href={`mailto:${EMAIL}`}
+                className="text-navy-50/80 hover:text-teal-300 transition"
+              >
+                {EMAIL}
+              </a>
+            </li>
           </ul>
         </div>
 
         <div>
-          <h3 className="font-bold text-lg mb-4">Leistungen</h3>
+          <h3 className="font-bold text-lg mb-4">Service-Region</h3>
           <ul className="space-y-2 text-navy-50/80">
-            <li>Krankenfahrten</li>
-            <li>Liegendtransporte</li>
-            <li>Rollstuhltransporte</li>
-            <li>Taxi-Service</li>
+            {SERVICE_CANTONS.map((c) => (
+              <li key={c.code}>
+                <a href={`#region-${c.slug}`} className="hover:text-teal-300 transition">
+                  Kanton {c.name}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -61,19 +74,19 @@ export function Footer() {
           <h3 className="font-bold text-lg mb-4">Rechtliches</h3>
           <ul className="space-y-2 text-navy-50/80">
             <li>
-              <a href="#" className="hover:text-teal-300 transition">
+              <Link href="/impressum" className="hover:text-teal-300 transition">
                 Impressum
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-300 transition">
+              <Link href="/datenschutz" className="hover:text-teal-300 transition">
                 Datenschutz
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-teal-300 transition">
+              <Link href="/agb" className="hover:text-teal-300 transition">
                 AGB
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -81,7 +94,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-navy-50/60 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© {new Date().getFullYear()} Cordavia. Alle Rechte vorbehalten.</span>
-          <span>DSGVO-konform · SSL verschlüsselt</span>
+          <span>Schweizer Datenschutz · SSL verschlüsselt</span>
         </div>
       </div>
     </footer>

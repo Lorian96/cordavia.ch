@@ -19,7 +19,7 @@ export type BookingRow = {
   first_name: string;
   last_name: string;
   phone: string;
-  email: string;
+  email: string | null;
   note_wheelchair: boolean;
   note_companion: boolean;
   note_lying: boolean;

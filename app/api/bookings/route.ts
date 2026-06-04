@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
     "firstName",
     "lastName",
     "phone",
-    "email",
   ];
   for (const key of required) {
     if (!payload[key]) {
@@ -52,6 +51,7 @@ export async function POST(request: NextRequest) {
     "-" +
     Math.random().toString(36).toUpperCase().slice(2, 5);
 
+  const trimmedEmail = payload.email?.trim().toLowerCase();
   const row: BookingRow = {
     booking_number: bookingNumber,
     transport_type: payload.transportType!,
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     first_name: payload.firstName!.trim(),
     last_name: payload.lastName!.trim(),
     phone: payload.phone!.trim(),
-    email: payload.email!.trim().toLowerCase(),
+    email: trimmedEmail || "",
     note_wheelchair: Boolean(payload.notes?.wheelchair),
     note_companion: Boolean(payload.notes?.companion),
     note_lying: Boolean(payload.notes?.lying),

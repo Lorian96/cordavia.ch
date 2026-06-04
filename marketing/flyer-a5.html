@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Cordavia — Flyer A5</title>
+<style>
+  /* ------- print page setup ------- */
+  @page {
+    size: A5 portrait;
+    margin: 0;
+  }
+  @media print {
+    html, body { margin: 0; padding: 0; }
+    .screen-hint { display: none !important; }
+    .flyer { box-shadow: none; margin: 0; }
+  }
+
+  /* ------- root tokens ------- */
+  :root {
+    --navy-950: #061a36;
+    --navy-900: #0b2545;
+    --navy-800: #13315c;
+    --navy-50:  #eef3fa;
+    --teal:     #14b8a6;
+    --teal-300: #5eead4;
+    --teal-50:  #ecfdf8;
+    --cream:    #fdf8f1;
+    --warm:     #fff4e6;
+    --ink:      #0b2545;
+    --rose:     #fff1f4;
+  }
+
+  /* ------- base ------- */
+  * { box-sizing: border-box; }
+  html, body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    color: var(--ink);
+    background: #e8edf5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body { padding: 24px 0; }
+
+  .screen-hint {
+    max-width: 520px;
+    margin: 0 auto 24px;
+    background: white;
+    border-left: 4px solid var(--teal);
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #334;
+    line-height: 1.5;
+  }
+  .screen-hint kbd {
+    background: #e6e6ee;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+
+  /* ------- flyer ------- */
+  .flyer {
+    width: 148mm;
+    height: 210mm;
+    margin: 0 auto;
+    background: var(--cream);
+    color: var(--ink);
+    box-shadow: 0 12px 40px rgba(10, 30, 60, 0.18);
+    overflow: hidden;
+    position: relative;
+    font-size: 9.5pt;
+    line-height: 1.4;
+  }
+
+  /* ------- decorative warm gradient corner ------- */
+  .glow-top {
+    position: absolute;
+    top: -40mm;
+    left: -30mm;
+    width: 110mm;
+    height: 110mm;
+    background: radial-gradient(circle, #fef3e6 0%, transparent 65%);
+    z-index: 0;
+  }
+  .glow-bottom {
+    position: absolute;
+    bottom: -50mm;
+    right: -30mm;
+    width: 110mm;
+    height: 110mm;
+    background: radial-gradient(circle, var(--teal-50) 0%, transparent 65%);
+    z-index: 0;
+  }
+
+  .flyer-inner {
+    position: relative;
+    z-index: 1;
+    padding: 11mm 11mm 9mm;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* ------- header ------- */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 7mm;
+  }
+  .brand-mark {
+    width: 11mm;
+    height: 11mm;
+    border-radius: 50%;
+    background: var(--navy-900);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 18pt;
+  }
+  .brand-name {
+    font-size: 18pt;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--navy-900);
+  }
+  .brand-tag {
+    margin-left: auto;
+    font-size: 7.5pt;
+    color: var(--navy-800);
+    text-align: right;
+    line-height: 1.3;
+  }
+
+  /* ------- hero ------- */
+  .hero {
+    margin-bottom: 4mm;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    background: var(--teal-50);
+    color: #0c7d6f;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 4mm;
+  }
+  .hero-title {
+    font-size: 22pt;
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--navy-900);
+    margin: 0 0 4mm;
+    letter-spacing: -0.5px;
+  }
+  .hero-title .accent {
+    color: var(--teal);
+  }
+  .hero-heart {
+    display: inline-block;
+    margin-right: 3px;
+    vertical-align: -2px;
+    color: var(--teal);
+  }
+  .hero-sub {
+    font-size: 10pt;
+    color: var(--navy-800);
+    margin: 0;
+  }
+
+  /* ------- services ------- */
+  .services {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+    margin-bottom: 4mm;
+  }
+  .svc {
+    background: white;
+    border-radius: 8px;
+    padding: 4mm;
+    border: 1px solid #e1e7f1;
+    display: flex;
+    gap: 3mm;
+    align-items: flex-start;
+  }
+  .svc-icon {
+    flex-shrink: 0;
+    width: 9mm;
+    height: 9mm;
+    border-radius: 6px;
+    background: var(--navy-900);
+    color: var(--teal-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .svc-icon svg { width: 5.5mm; height: 5.5mm; }
+  .svc-title {
+    font-weight: 800;
+    font-size: 10pt;
+    color: var(--navy-900);
+    margin: 0 0 1mm;
+    line-height: 1.1;
+  }
+  .svc-desc {
+    font-size: 7.5pt;
+    color: var(--navy-800);
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  /* ------- USPs ------- */
+  .usps {
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 5mm 6mm 5.5mm;
+    margin-bottom: 4mm;
+    position: relative;
+    overflow: hidden;
+  }
+  .usps::before {
+    content: '';
+    position: absolute;
+    top: -20mm;
+    right: -20mm;
+    width: 60mm;
+    height: 60mm;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, transparent 60%);
+  }
+  .usps-title {
+    font-size: 11pt;
+    font-weight: 800;
+    margin: 0 0 3.5mm;
+    position: relative;
+    text-align: center;
+  }
+  .usps-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 6mm;
+    row-gap: 2.2mm;
+    position: relative;
+    max-width: 115mm;
+    margin: 0 auto;
+  }
+  .usp {
+    display: flex;
+    align-items: center;
+    gap: 1.8mm;
+    font-size: 8.5pt;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .usp .check {
+    flex-shrink: 0;
+    width: 3.6mm;
+    height: 3.6mm;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--navy-950);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 6.5pt;
+  }
+
+  /* ------- contact ------- */
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 5mm;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 4mm;
+    border-top: 2px dashed var(--navy-50);
+  }
+  .contact-info { line-height: 1.45; }
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+    font-size: 10pt;
+    color: var(--navy-900);
+    margin-bottom: 1.5mm;
+  }
+  .contact-row:last-child { margin-bottom: 0; }
+  .contact-row .label-icon {
+    width: 5mm;
+    height: 5mm;
+    border-radius: 50%;
+    background: var(--teal-50);
+    color: var(--teal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .contact-row .label-icon svg { width: 3mm; height: 3mm; }
+  .contact-phone {
+    font-weight: 800;
+    color: var(--navy-900);
+    font-size: 13pt;
+    letter-spacing: 0.5px;
+  }
+  .contact-url {
+    color: var(--navy-800);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .qr {
+    background: white;
+    padding: 2mm;
+    border-radius: 6px;
+    border: 1px solid var(--navy-50);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 24mm;
+  }
+  .qr img { width: 20mm; height: 20mm; display: block; }
+  .qr-label {
+    font-size: 6.5pt;
+    color: var(--navy-800);
+    margin-top: 1mm;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  /* ------- footer note ------- */
+  .footer-note {
+    text-align: center;
+    font-size: 6.5pt;
+    color: var(--navy-800);
+    opacity: 0.75;
+    margin-top: 3mm;
+  }
+</style>
+</head>
+<body>
+
+<!-- this prompt only shows on screen, not in print -->
+<div class="screen-hint">
+  📄 <strong>So druckst du den Flyer:</strong>
+  <kbd>Strg</kbd> + <kbd>P</kbd> → Format <strong>A5</strong> · Ränder <strong>Keine</strong> ·
+  „Hintergrundgrafiken" <strong>aktivieren</strong> · als PDF speichern oder direkt drucken.
+</div>
+
+<article class="flyer" aria-label="Cordavia Flyer">
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
+
+  <div class="flyer-inner">
+
+    <!-- ===== Brand bar ===== -->
+    <header class="brand">
+      <div class="brand-mark">C</div>
+      <div class="brand-name">Cordavia</div>
+      <div class="brand-tag">
+        Taxi · Krankenfahrten<br />
+        Liegend- &amp; Rollstuhltransporte
+      </div>
+    </header>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <h1 class="hero-title">
+        Wir bringen Sie<br />
+        sicher ans Ziel.
+        <span class="accent">
+          <svg class="hero-heart" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <path d="M12 21s-7-4.5-9.5-9C.9 9.2 2.2 5 6 5c2 0 3.5 1 4 2 1.5-3 3-2 4-2 4 0 5.1 4.2 3.5 7-2.5 4.5-9.5 9-9.5 9z"/>
+          </svg>
+          Mit Herz.
+        </span>
+      </h1>
+      <p class="hero-sub">
+        Ihr Taxi für jeden Weg – ob in die Stadt, zum Flughafen,
+        zum Arzt oder zur Reha. 24 Stunden für Sie da.
+      </p>
+    </section>
+
+    <!-- ===== Services ===== -->
+    <section class="services" aria-label="Leistungen">
+      <div class="svc">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            <polyline points="3.5 12 7 12 9 8 12 16 14 12 20.5 12"/>
+          </svg>
+        </div>
+        <div>
+          <p class="svc-title">Krankenfahrten</p>
+          <p class="svc-desc">Arzt, Klinik, Dialyse oder Reha – pünktlich und komfortabel.</p>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12h20"/>
+            <path d="M4 12V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/>
+            <circle cx="6" cy="16" r="2"/>
+            <circle cx="18" cy="16" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <p class="svc-title">Liegendtransport</p>
+          <p class="svc-desc">Komfortable Beförderung im Liegen, mit geschultem Personal.</p>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="4" r="2"/>
+            <path d="M12 6v6h6l-3 6"/>
+            <circle cx="14" cy="18" r="4"/>
+            <path d="M9 7l3 5"/>
+          </svg>
+        </div>
+        <div>
+          <p class="svc-title">Rollstuhl-Transport</p>
+          <p class="svc-desc">Barrierefreie Fahrzeuge mit sicherer Befestigung.</p>
+        </div>
+      </div>
+      <div class="svc">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17h18l-2-7H5l-2 7z"/>
+            <circle cx="7" cy="17" r="2"/>
+            <circle cx="17" cy="17" r="2"/>
+            <path d="M9 6h6v4H9z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="svc-title">Taxi-Service</p>
+          <p class="svc-desc">Stadt, Land, Flughafen oder Privatfahrt – schnell &amp; zuverlässig.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== USPs ===== -->
+    <section class="usps">
+      <p class="usps-title">Warum Cordavia?</p>
+      <div class="usps-grid">
+        <div class="usp"><span class="check">✓</span> 24 / 7 erreichbar</div>
+        <div class="usp"><span class="check">✓</span> Geschultes Personal</div>
+        <div class="usp"><span class="check">✓</span> Barrierefrei &amp; sicher</div>
+        <div class="usp"><span class="check">✓</span> Pünktlich &amp; persönlich</div>
+        <div class="usp"><span class="check">✓</span> Buchung in 60 Sek.</div>
+      </div>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section class="contact" aria-label="Kontakt">
+      <div class="contact-info">
+        <div class="contact-row">
+          <span class="label-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </span>
+          <span class="contact-phone">+41 XX XXX XX XX</span>
+        </div>
+        <div class="contact-row">
+          <span class="label-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </span>
+          <a class="contact-url" href="https://cordavia.ch">cordavia.ch</a>
+        </div>
+        <div class="contact-row">
+          <span class="label-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </span>
+          <span style="font-size: 9pt; color: var(--navy-800)">info@cordavia.ch</span>
+        </div>
+      </div>
+
+      <div class="qr">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Fcordavia.ch&color=0b2545&bgcolor=ffffff&qzone=1" alt="QR-Code cordavia.ch" />
+        <p class="qr-label">Online buchen<br>cordavia.ch</p>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Cordavia · Wir kümmern uns. Auf jedem Weg.
+    </p>
+  </div>
+</article>
+
+</body>
+</html>

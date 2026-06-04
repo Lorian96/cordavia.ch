@@ -57,7 +57,7 @@ export async function notifyAdminOfBooking(row: BookingRow) {
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Ziel</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(row.destination)}</td></tr>
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Kunde</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><b>${esc(row.first_name)} ${esc(row.last_name)}</b></td></tr>
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Telefon</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="tel:${esc(row.phone)}" style="color:#0B2545;">${esc(row.phone)}</a></td></tr>
-            <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">E-Mail</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="mailto:${esc(row.email)}" style="color:#0B2545;">${esc(row.email)}</a></td></tr>
+            ${row.email && row.email.length > 0 ? `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">E-Mail</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="mailto:${esc(row.email)}" style="color:#0B2545;">${esc(row.email)}</a></td></tr>` : ""}
             ${notes.length ? `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Hinweise</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(notes.join(", "))}</td></tr>` : ""}
             ${row.comment ? `<tr><td style="padding:8px 0;color:#64748b;vertical-align:top;">Kommentar</td><td style="padding:8px 0;white-space:pre-wrap;">${esc(row.comment)}</td></tr>` : ""}
           </table>
@@ -83,7 +83,7 @@ export async function notifyAdminOfBooking(row: BookingRow) {
     "",
     `Kunde: ${row.first_name} ${row.last_name}`,
     `Telefon: ${row.phone}`,
-    `E-Mail: ${row.email}`,
+    row.email && row.email.length > 0 ? `E-Mail: ${row.email}` : "",
     notes.length ? `Hinweise: ${notes.join(", ")}` : "",
     row.comment ? `Kommentar: ${row.comment}` : "",
     "",
@@ -103,7 +103,7 @@ export async function notifyAdminOfBooking(row: BookingRow) {
         subject,
         html,
         text,
-        reply_to: row.email,
+        ...(row.email && row.email.length > 0 ? { reply_to: row.email } : {}),
       }),
     });
 

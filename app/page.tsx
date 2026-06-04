@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
+import { Regions } from "@/components/Regions";
 import { Trust } from "@/components/Trust";
 import { Footer } from "@/components/Footer";
 import { BookingForm } from "@/components/BookingForm";
@@ -12,6 +13,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
         <Services />
+        <Regions />
 
         <section
           id="buchung"
@@ -23,10 +25,11 @@ export default function Home() {
                 Online-Buchung
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-navy-900 mb-4">
-                In unter 60 Sekunden zur Fahrt
+                Fahrt anfragen — in fünf Schritten
               </h2>
               <p className="text-xl text-navy-800/80 leading-relaxed">
-                Einfach. Schnell. Sicher. Buchen Sie Ihre Fahrt in wenigen Schritten.
+                Einfach, übersichtlich, ohne E-Mail-Adresse. Wir rufen Sie zur
+                Bestätigung an.
               </p>
             </div>
             <BookingForm />

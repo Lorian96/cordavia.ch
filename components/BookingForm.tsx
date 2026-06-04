@@ -7,17 +7,14 @@ import {
   Calendar,
   Check,
   HeartPulse,
+  Phone,
   Stretcher,
   TaxiCar,
   Wheelchair,
 } from "./icons";
+import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
-type TransportType =
-  | "krankenfahrt"
-  | "liegend"
-  | "rollstuhl"
-  | "taxi"
-  | null;
+type TransportType = "krankenfahrt" | "liegend" | "rollstuhl" | "taxi" | null;
 
 type Booking = {
   transportType: TransportType;
@@ -28,14 +25,6 @@ type Booking = {
   firstName: string;
   lastName: string;
   phone: string;
-  email: string;
-  notes: {
-    wheelchair: boolean;
-    companion: boolean;
-    lying: boolean;
-    insurance: boolean;
-  };
-  comment: string;
 };
 
 const emptyBooking: Booking = {
@@ -47,14 +36,6 @@ const emptyBooking: Booking = {
   firstName: "",
   lastName: "",
   phone: "",
-  email: "",
-  notes: {
-    wheelchair: false,
-    companion: false,
-    lying: false,
-    insurance: false,
-  },
-  comment: "",
 };
 
 const TRANSPORT_LABELS: Record<Exclude<TransportType, null>, string> = {
@@ -66,12 +47,9 @@ const TRANSPORT_LABELS: Record<Exclude<TransportType, null>, string> = {
 
 const STEPS = [
   "Transportart",
-  "Abholung",
-  "Ziel",
-  "Datum",
-  "Uhrzeit",
+  "Route",
+  "Datum & Zeit",
   "Kontakt",
-  "Hinweise",
   "Bestätigung",
 ] as const;
 
@@ -80,6 +58,12 @@ const TIME_SLOTS = [
   "11:00", "12:00", "13:00", "14:00", "15:00",
   "16:00", "17:00", "18:00", "19:00", "20:00",
 ];
+
+function isValidSwissPhone(s: string): boolean {
+  // Akzeptiert: +41XXXXXXXXX, 0041XXXXXXXXX, 0XXXXXXXXX (Schweizer Nummern)
+  const cleaned = s.replace(/[\s().-]/g, "");
+  return /^(\+41|0041|0)[1-9]\d{8}$/.test(cleaned);
+}
 
 export function BookingForm() {
   const [step, setStep] = useState(0);
@@ -90,34 +74,47 @@ export function BookingForm() {
     | { status: "error"; message: string }
     | null
   >(null);
+  const [showErrors, setShowErrors] = useState(false);
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   const canContinue = useMemo(() => {
     switch (step) {
-      case 0: return booking.transportType !== null;
-      case 1: return booking.pickup.trim().length > 3;
-      case 2: return booking.destination.trim().length > 3;
-      case 3: return booking.date !== "";
-      case 4: return booking.time !== "";
-      case 5:
+      case 0:
+        return booking.transportType !== null;
+      case 1:
+        return booking.pickup.trim().length > 3 && booking.destination.trim().length > 3;
+      case 2:
+        return booking.date !== "" && booking.date >= today && booking.time !== "";
+      case 3:
         return (
           booking.firstName.trim().length > 1 &&
           booking.lastName.trim().length > 1 &&
-          booking.phone.trim().length > 5 &&
-          /\S+@\S+\.\S+/.test(booking.email)
+          isValidSwissPhone(booking.phone)
         );
-      case 6: return true;
-      default: return true;
+      case 4:
+        return true;
+      default:
+        return true;
     }
-  }, [step, booking]);
+  }, [step, booking, today]);
 
   function update<K extends keyof Booking>(key: K, value: Booking[K]) {
     setBooking((b) => ({ ...b, [key]: value }));
   }
 
-  function toggleNote(k: keyof Booking["notes"]) {
-    setBooking((b) => ({ ...b, notes: { ...b.notes, [k]: !b.notes[k] } }));
+  function goNext() {
+    if (!canContinue) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setStep((s) => Math.min(STEPS.length - 1, s + 1));
+  }
+
+  function goBack() {
+    setShowErrors(false);
+    setStep((s) => Math.max(0, s - 1));
   }
 
   async function submit() {
@@ -146,6 +143,7 @@ export function BookingForm() {
     setBooking(emptyBooking);
     setStep(0);
     setResult(null);
+    setShowErrors(false);
   }
 
   if (result?.status === "ok") {
@@ -163,13 +161,17 @@ export function BookingForm() {
             Schritt {step + 1} von {STEPS.length}: {STEPS[step]}
           </span>
           <span className="text-teal-300 font-semibold hidden sm:inline">
-            Buchung in ~60 Sek.
+            5 Schritte zur Fahrt
           </span>
         </div>
         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full bg-teal-400 transition-all duration-300"
             style={{ width: `${progressPct}%` }}
+            role="progressbar"
+            aria-valuenow={step + 1}
+            aria-valuemin={1}
+            aria-valuemax={STEPS.length}
           />
         </div>
       </div>
@@ -183,41 +185,20 @@ export function BookingForm() {
           />
         )}
         {step === 1 && (
-          <AddressStep
-            label="Wo möchten Sie abgeholt werden?"
-            placeholder="Straße, Hausnummer, PLZ, Ort"
-            value={booking.pickup}
-            onChange={(v) => update("pickup", v)}
-          />
+          <RouteStep booking={booking} update={update} showErrors={showErrors} />
         )}
         {step === 2 && (
-          <AddressStep
-            label="Wohin soll die Fahrt gehen?"
-            placeholder="Straße, Hausnummer, PLZ, Ort"
-            value={booking.destination}
-            onChange={(v) => update("destination", v)}
+          <DateTimeStep
+            booking={booking}
+            update={update}
+            minDate={today}
+            showErrors={showErrors}
           />
         )}
         {step === 3 && (
-          <DateStep
-            min={today}
-            value={booking.date}
-            onChange={(v) => update("date", v)}
-          />
+          <ContactStep booking={booking} update={update} showErrors={showErrors} />
         )}
-        {step === 4 && (
-          <TimeStep value={booking.time} onChange={(v) => update("time", v)} />
-        )}
-        {step === 5 && <ContactStep booking={booking} update={update} />}
-        {step === 6 && (
-          <NotesStep
-            notes={booking.notes}
-            comment={booking.comment}
-            toggle={toggleNote}
-            onComment={(v) => update("comment", v)}
-          />
-        )}
-        {step === 7 && <Summary booking={booking} />}
+        {step === 4 && <Summary booking={booking} />}
 
         {result?.status === "error" && (
           <p
@@ -233,7 +214,7 @@ export function BookingForm() {
       <div className="px-6 sm:px-10 py-5 bg-surface-muted border-t border-navy-50 flex items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
+          onClick={goBack}
           disabled={step === 0 || submitting}
           className="inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-navy-900 disabled:opacity-40 hover:bg-white transition"
         >
@@ -244,9 +225,8 @@ export function BookingForm() {
         {step < STEPS.length - 1 ? (
           <button
             type="button"
-            onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-            disabled={!canContinue}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-navy-900 hover:bg-navy-800 disabled:bg-navy-900/30 disabled:cursor-not-allowed text-white font-bold text-lg shadow-lg transition"
+            onClick={goNext}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-navy-900 hover:bg-navy-800 text-white font-bold text-lg shadow-lg transition"
           >
             Weiter
             <ArrowRight className="h-5 w-5" />
@@ -261,7 +241,7 @@ export function BookingForm() {
             {submitting ? "Wird gesendet…" : (
               <>
                 <Check className="h-5 w-5" />
-                Buchung bestätigen
+                Buchung absenden
               </>
             )}
           </button>
@@ -294,15 +274,38 @@ function TransportStep({
   onChange: (v: TransportType) => void;
 }) {
   const options = [
-    { id: "krankenfahrt", label: "Krankenfahrt", icon: <HeartPulse className="h-7 w-7" />, desc: "Arzt, Klinik, Reha" },
-    { id: "liegend", label: "Liegendtransport", icon: <Stretcher className="h-7 w-7" />, desc: "Transport im Liegen" },
-    { id: "rollstuhl", label: "Rollstuhltransport", icon: <Wheelchair className="h-7 w-7" />, desc: "Barrierefrei" },
-    { id: "taxi", label: "Taxi", icon: <TaxiCar className="h-7 w-7" />, desc: "Stadt- & Privatfahrt" },
+    {
+      id: "krankenfahrt",
+      label: "Krankenfahrt",
+      icon: <HeartPulse className="h-7 w-7" />,
+      desc: "Arzt, Klinik, Dialyse, Reha",
+    },
+    {
+      id: "liegend",
+      label: "Liegendtransport",
+      icon: <Stretcher className="h-7 w-7" />,
+      desc: "Transport im Liegen",
+    },
+    {
+      id: "rollstuhl",
+      label: "Rollstuhltransport",
+      icon: <Wheelchair className="h-7 w-7" />,
+      desc: "Barrierefrei mit Hublift",
+    },
+    {
+      id: "taxi",
+      label: "Taxi",
+      icon: <TaxiCar className="h-7 w-7" />,
+      desc: "Stadt, Privatfahrt",
+    },
   ] as const;
 
   return (
     <>
-      <StepHeader title="Welche Art von Fahrt benötigen Sie?" subtitle="Wählen Sie eine Option aus." />
+      <StepHeader
+        title="Welche Art von Fahrt benötigen Sie?"
+        subtitle="Bitte wählen Sie eine Option."
+      />
       <div className="grid sm:grid-cols-2 gap-4">
         {options.map((o) => {
           const active = value === o.id;
@@ -316,12 +319,19 @@ function TransportStep({
                   ? "border-teal-500 bg-teal-50 ring-4 ring-teal-200"
                   : "border-navy-50 hover:border-navy-200 bg-white"
               }`}
+              aria-pressed={active}
             >
-              <span className={`inline-flex h-12 w-12 items-center justify-center rounded-xl shrink-0 ${active ? "bg-teal-500 text-navy-950" : "bg-navy-900 text-teal-300"}`}>
+              <span
+                className={`inline-flex h-12 w-12 items-center justify-center rounded-xl shrink-0 ${
+                  active ? "bg-teal-500 text-navy-950" : "bg-navy-900 text-teal-300"
+                }`}
+              >
                 {o.icon}
               </span>
               <span>
-                <span className="block text-xl font-bold text-navy-900 mb-1">{o.label}</span>
+                <span className="block text-xl font-bold text-navy-900 mb-1">
+                  {o.label}
+                </span>
                 <span className="block text-navy-800/70">{o.desc}</span>
               </span>
             </button>
@@ -332,90 +342,132 @@ function TransportStep({
   );
 }
 
-function AddressStep({
-  label,
-  placeholder,
-  value,
-  onChange,
+function RouteStep({
+  booking,
+  update,
+  showErrors,
 }: {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChange: (v: string) => void;
+  booking: Booking;
+  update: <K extends keyof Booking>(key: K, value: Booking[K]) => void;
+  showErrors: boolean;
 }) {
+  const pickupErr = showErrors && booking.pickup.trim().length <= 3;
+  const destErr = showErrors && booking.destination.trim().length <= 3;
   return (
     <>
-      <StepHeader title={label} subtitle="Geben Sie die vollständige Adresse ein." />
-      <input
-        type="text"
-        autoFocus
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full text-xl rounded-2xl border-2 border-navy-50 focus:border-teal-500 px-5 py-4 outline-none transition"
+      <StepHeader
+        title="Wo geht die Fahrt los, wohin?"
+        subtitle="Geben Sie Abhol- und Zielort an."
       />
-    </>
-  );
-}
-
-function DateStep({
-  min,
-  value,
-  onChange,
-}: {
-  min: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <>
-      <StepHeader title="Wann möchten Sie fahren?" subtitle="Wählen Sie das Datum Ihrer Fahrt." />
-      <div className="relative max-w-md">
-        <Calendar className="h-6 w-6 text-navy-900 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-        <input
-          type="date"
-          min={min}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full text-xl rounded-2xl border-2 border-navy-50 focus:border-teal-500 pl-12 pr-5 py-4 outline-none transition"
+      <div className="space-y-5">
+        <LabeledField
+          label="Abholort"
+          placeholder="z.B. Musterstrasse 12, 8001 Zürich"
+          value={booking.pickup}
+          onChange={(v) => update("pickup", v)}
+          autoComplete="street-address"
+          error={pickupErr ? "Bitte vollständige Adresse angeben." : null}
+          autoFocus
+        />
+        <LabeledField
+          label="Zielort"
+          placeholder="z.B. Kantonsspital St.Gallen"
+          value={booking.destination}
+          onChange={(v) => update("destination", v)}
+          autoComplete="off"
+          error={destErr ? "Bitte Zielort angeben." : null}
         />
       </div>
     </>
   );
 }
 
-function TimeStep({
-  value,
-  onChange,
+function DateTimeStep({
+  booking,
+  update,
+  minDate,
+  showErrors,
 }: {
-  value: string;
-  onChange: (v: string) => void;
+  booking: Booking;
+  update: <K extends keyof Booking>(key: K, value: Booking[K]) => void;
+  minDate: string;
+  showErrors: boolean;
 }) {
+  const dateErr =
+    showErrors && (booking.date === "" || booking.date < minDate);
+  const timeErr = showErrors && booking.time === "";
   return (
     <>
-      <StepHeader title="Um wie viel Uhr?" subtitle="Wählen Sie eine verfügbare Uhrzeit." />
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-        {TIME_SLOTS.map((t) => {
-          const active = value === t;
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => onChange(t)}
-              className={`py-3 rounded-xl text-lg font-bold border-2 transition ${
-                active
-                  ? "bg-teal-500 border-teal-500 text-navy-950"
-                  : "bg-white border-navy-50 text-navy-900 hover:border-teal-400"
+      <StepHeader
+        title="Wann möchten Sie fahren?"
+        subtitle="Datum und gewünschte Abholzeit."
+      />
+      <div className="space-y-6 max-w-xl">
+        <label className="block">
+          <span className="block text-base font-semibold text-navy-900 mb-2">
+            Datum
+          </span>
+          <div className="relative">
+            <Calendar className="h-6 w-6 text-navy-900 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="date"
+              min={minDate}
+              value={booking.date}
+              onChange={(e) => update("date", e.target.value)}
+              className={`w-full text-xl rounded-2xl border-2 pl-12 pr-5 py-4 outline-none transition ${
+                dateErr ? "border-red-400 bg-red-50" : "border-navy-50 focus:border-teal-500"
               }`}
-            >
-              {t}
-            </button>
-          );
-        })}
+            />
+          </div>
+          {dateErr && (
+            <p className="text-sm text-red-700 mt-2">
+              Bitte ein Datum ab heute wählen.
+            </p>
+          )}
+        </label>
+
+        <div>
+          <span className="block text-base font-semibold text-navy-900 mb-2">
+            Gewünschte Abholzeit
+          </span>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+            {TIME_SLOTS.map((t) => {
+              const active = booking.time === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => update("time", t)}
+                  className={`py-3 rounded-xl text-lg font-bold border-2 transition ${
+                    active
+                      ? "bg-teal-500 border-teal-500 text-navy-950"
+                      : "bg-white border-navy-50 text-navy-900 hover:border-teal-400"
+                  }`}
+                  aria-pressed={active}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
+          {timeErr && (
+            <p className="text-sm text-red-700 mt-2">
+              Bitte eine Uhrzeit wählen.
+            </p>
+          )}
+        </div>
+
+        <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-navy-900 text-sm">
+          <p className="font-semibold mb-1">Hinweis</p>
+          <p>
+            Wir bestätigen die genaue Abholzeit nach Eingang Ihrer Buchung
+            telefonisch. Andere Zeit nötig? Rufen Sie uns an –{" "}
+            <a href={`tel:${PHONE_TEL}`} className="text-teal-700 font-semibold underline">
+              {PHONE_DISPLAY}
+            </a>
+          </p>
+        </div>
       </div>
-      <p className="mt-6 text-navy-800/70">
-        Andere Uhrzeit nötig? Rufen Sie uns an – wir finden eine Lösung.
-      </p>
     </>
   );
 }
@@ -423,57 +475,77 @@ function TimeStep({
 function ContactStep({
   booking,
   update,
+  showErrors,
 }: {
   booking: Booking;
   update: <K extends keyof Booking>(key: K, value: Booking[K]) => void;
+  showErrors: boolean;
 }) {
+  const firstErr = showErrors && booking.firstName.trim().length <= 1;
+  const lastErr = showErrors && booking.lastName.trim().length <= 1;
+  const phoneErr = showErrors && !isValidSwissPhone(booking.phone);
   return (
     <>
-      <StepHeader title="Ihre Kontaktdaten" subtitle="Damit wir die Buchung bestätigen können." />
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field
+      <StepHeader
+        title="Ihre Kontaktdaten"
+        subtitle="Damit wir Sie zur Bestätigung erreichen können."
+      />
+      <div className="grid sm:grid-cols-2 gap-4 mb-6">
+        <LabeledField
           label="Vorname"
           value={booking.firstName}
           onChange={(v) => update("firstName", v)}
           autoComplete="given-name"
+          error={firstErr ? "Bitte Vorname angeben." : null}
         />
-        <Field
+        <LabeledField
           label="Nachname"
           value={booking.lastName}
           onChange={(v) => update("lastName", v)}
           autoComplete="family-name"
+          error={lastErr ? "Bitte Nachname angeben." : null}
         />
-        <Field
-          label="Telefonnummer"
-          type="tel"
-          value={booking.phone}
-          onChange={(v) => update("phone", v)}
-          autoComplete="tel"
-        />
-        <Field
-          label="E-Mail"
-          type="email"
-          value={booking.email}
-          onChange={(v) => update("email", v)}
-          autoComplete="email"
-        />
+        <div className="sm:col-span-2">
+          <LabeledField
+            label="Telefonnummer"
+            type="tel"
+            placeholder="+41 79 123 45 67"
+            value={booking.phone}
+            onChange={(v) => update("phone", v)}
+            autoComplete="tel"
+            error={phoneErr ? "Bitte gültige Schweizer Telefonnummer." : null}
+          />
+        </div>
+      </div>
+      <div className="bg-navy-50 border border-navy-100 rounded-xl p-4 text-navy-900 text-sm flex gap-3 items-start">
+        <Phone className="h-5 w-5 text-navy-900 shrink-0 mt-0.5" />
+        <p>
+          <strong>Wir rufen Sie zur Bestätigung an.</strong> Eine E-Mail-Adresse
+          ist nicht erforderlich – wir melden uns telefonisch oder per WhatsApp.
+        </p>
       </div>
     </>
   );
 }
 
-function Field({
+function LabeledField({
   label,
   value,
   onChange,
   type = "text",
+  placeholder,
   autoComplete,
+  error,
+  autoFocus,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
+  placeholder?: string;
   autoComplete?: string;
+  error?: string | null;
+  autoFocus?: boolean;
 }) {
   return (
     <label className="block">
@@ -481,111 +553,58 @@ function Field({
       <input
         type={type}
         value={value}
+        placeholder={placeholder}
         autoComplete={autoComplete}
+        autoFocus={autoFocus}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full text-lg rounded-2xl border-2 border-navy-50 focus:border-teal-500 px-4 py-3 outline-none transition"
+        className={`w-full text-lg rounded-2xl border-2 px-4 py-3 outline-none transition ${
+          error
+            ? "border-red-400 bg-red-50 focus:border-red-500"
+            : "border-navy-50 focus:border-teal-500"
+        }`}
+        aria-invalid={Boolean(error)}
       />
+      {error && (
+        <p className="text-sm text-red-700 mt-1.5">{error}</p>
+      )}
     </label>
-  );
-}
-
-function NotesStep({
-  notes,
-  comment,
-  toggle,
-  onComment,
-}: {
-  notes: Booking["notes"];
-  comment: string;
-  toggle: (k: keyof Booking["notes"]) => void;
-  onComment: (v: string) => void;
-}) {
-  const items: { key: keyof Booking["notes"]; label: string }[] = [
-    { key: "wheelchair", label: "Ich nutze einen Rollstuhl" },
-    { key: "companion", label: "Begleitperson kommt mit" },
-    { key: "lying", label: "Transport im Liegen erforderlich" },
-    { key: "insurance", label: "Über Krankenkasse abrechnen" },
-  ];
-
-  return (
-    <>
-      <StepHeader title="Besondere Hinweise" subtitle="Optional – damit wir Ihre Fahrt optimal vorbereiten." />
-      <div className="grid sm:grid-cols-2 gap-3 mb-6">
-        {items.map((it) => {
-          const active = notes[it.key];
-          return (
-            <button
-              key={it.key}
-              type="button"
-              onClick={() => toggle(it.key)}
-              className={`flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition ${
-                active
-                  ? "border-teal-500 bg-teal-50"
-                  : "border-navy-50 bg-white hover:border-navy-200"
-              }`}
-            >
-              <span
-                className={`inline-flex h-7 w-7 items-center justify-center rounded-md border-2 shrink-0 ${
-                  active ? "bg-teal-500 border-teal-500 text-navy-950" : "border-navy-200 bg-white"
-                }`}
-                aria-hidden
-              >
-                {active && <Check className="h-5 w-5" />}
-              </span>
-              <span className="text-lg font-medium text-navy-900">{it.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      <label className="block">
-        <span className="block text-base font-semibold text-navy-900 mb-2">
-          Sonstige Bemerkungen
-        </span>
-        <textarea
-          value={comment}
-          onChange={(e) => onComment(e.target.value)}
-          rows={4}
-          className="w-full text-lg rounded-2xl border-2 border-navy-50 focus:border-teal-500 px-4 py-3 outline-none transition resize-none"
-          placeholder="z.B. Treppenhaus, 3. Stock ohne Aufzug"
-        />
-      </label>
-    </>
   );
 }
 
 function Summary({ booking }: { booking: Booking }) {
   return (
     <>
-      <StepHeader title="Fast geschafft!" subtitle="Bitte prüfen Sie Ihre Angaben und bestätigen Sie die Buchung." />
-      <div className="space-y-3 bg-surface-muted rounded-2xl p-5">
-        <SumRow label="Art" value={booking.transportType ? TRANSPORT_LABELS[booking.transportType] : "-"} />
-        <SumRow label="Abholung" value={booking.pickup} />
-        <SumRow label="Ziel" value={booking.destination} />
-        <SumRow label="Datum" value={booking.date} />
-        <SumRow label="Uhrzeit" value={booking.time} />
+      <StepHeader
+        title="Bitte prüfen Sie Ihre Angaben"
+        subtitle="Wenn alles stimmt, senden Sie die Buchung ab."
+      />
+      <div className="space-y-3 bg-surface-muted rounded-2xl p-5 mb-5">
+        <SumRow label="Transport-Art" value={booking.transportType ? TRANSPORT_LABELS[booking.transportType] : "-"} />
+        <SumRow label="Abholort" value={booking.pickup} />
+        <SumRow label="Zielort" value={booking.destination} />
+        <SumRow label="Datum" value={formatDate(booking.date)} />
+        <SumRow label="Abholzeit" value={booking.time} />
         <SumRow label="Name" value={`${booking.firstName} ${booking.lastName}`} />
         <SumRow label="Telefon" value={booking.phone} />
-        <SumRow label="E-Mail" value={booking.email} />
-        {Object.values(booking.notes).some(Boolean) && (
-          <SumRow
-            label="Hinweise"
-            value={[
-              booking.notes.wheelchair && "Rollstuhl",
-              booking.notes.companion && "Begleitung",
-              booking.notes.lying && "Liegend",
-              booking.notes.insurance && "Krankenkasse",
-            ]
-              .filter(Boolean)
-              .join(", ")}
-          />
-        )}
-        {booking.comment && <SumRow label="Bemerkungen" value={booking.comment} />}
       </div>
-      <p className="text-sm text-navy-800/70 mt-4">
-        Mit dem Klick auf „Buchung bestätigen“ erhalten Sie eine Bestätigung per E-Mail und SMS.
+      <p className="text-sm text-navy-800/70">
+        Mit dem Absenden bestätigen Sie, dass die Angaben korrekt sind. Wir
+        rufen Sie zur Bestätigung der Abholzeit an.
       </p>
     </>
   );
+}
+
+function formatDate(iso: string): string {
+  if (!iso) return "-";
+  const d = new Date(iso + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("de-CH", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function SumRow({ label, value }: { label: string; value: string }) {
@@ -612,28 +631,47 @@ function SuccessScreen({
         <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-white mb-5">
           <Check className="h-10 w-10 text-teal-500" />
         </div>
-        <h3 className="text-3xl sm:text-4xl font-black mb-2">Buchung empfangen!</h3>
-        <p className="text-lg">Ihre Buchungsnummer:</p>
+        <h3 className="text-3xl sm:text-4xl font-black mb-2">
+          Ihre Anfrage ist eingegangen!
+        </h3>
+        <p className="text-lg">Buchungsnummer:</p>
         <p className="text-2xl sm:text-3xl font-mono font-bold tracking-widest mt-2">
           {bookingNumber}
         </p>
       </div>
       <div className="p-6 sm:p-10">
-        <p className="text-lg text-navy-900 mb-6">
-          Vielen Dank, <strong>{booking.firstName} {booking.lastName}</strong>! Wir haben Ihre Anfrage erhalten und melden uns
-          umgehend zur Bestätigung. Eine Bestätigung erhalten Sie zusätzlich per E-Mail und SMS.
+        <p className="text-lg text-navy-900 mb-2">
+          Vielen Dank, <strong>{booking.firstName} {booking.lastName}</strong>!
+        </p>
+        <p className="text-navy-800/80 mb-6 leading-relaxed">
+          Wir melden uns telefonisch unter{" "}
+          <strong className="text-navy-900">{booking.phone}</strong> zur
+          Bestätigung der Abholzeit. In der Regel innerhalb der nächsten 15
+          Minuten – an Werktagen während der Geschäftszeit.
         </p>
         <div className="grid sm:grid-cols-2 gap-3 mb-6">
-          <SumRow label="Fahrt" value={booking.transportType ? TRANSPORT_LABELS[booking.transportType] : "-"} />
-          <SumRow label="Datum" value={`${booking.date} · ${booking.time}`} />
+          <SumRow
+            label="Fahrt"
+            value={booking.transportType ? TRANSPORT_LABELS[booking.transportType] : "-"}
+          />
+          <SumRow label="Termin" value={`${formatDate(booking.date)} · ${booking.time}`} />
         </div>
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-navy-900 hover:bg-navy-800 text-white font-bold text-lg transition"
-        >
-          Neue Buchung starten
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-navy-900 hover:bg-navy-800 text-white font-bold transition"
+          >
+            Neue Buchung starten
+          </button>
+          <a
+            href={`tel:${PHONE_TEL}`}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border-2 border-navy-100 hover:border-teal-500 text-navy-900 font-bold transition"
+          >
+            <Phone className="h-5 w-5" />
+            Direkt anrufen
+          </a>
+        </div>
       </div>
     </div>
   );
