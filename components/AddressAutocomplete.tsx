@@ -43,6 +43,8 @@ export function AddressAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
   const justSelectedRef = useRef(false);
 
+  const [locationHint, setLocationHint] = useState<string | null>(null);
+
   function useCurrentLocation() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       setLocationError("Standort wird vom Browser nicht unterstützt.");
@@ -50,8 +52,10 @@ export function AddressAutocomplete({
     }
     setLocating(true);
     setLocationError(null);
+    setLocationHint(null);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        const accuracy = pos.coords.accuracy; // Meter
         try {
           const res = await fetch(
             `/api/places/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
@@ -63,6 +67,13 @@ export function AddressAutocomplete({
             setQuery(data.result.full);
             onChange(data.result.full);
             setOpen(false);
+            if (accuracy > 500) {
+              setLocationHint(
+                `Standort grob (±${Math.round(accuracy)} m) — bitte prüfen und ggf. anpassen.`
+              );
+            } else {
+              setLocationHint("Adresse aus Standort übernommen — bitte prüfen.");
+            }
           } else {
             setLocationError("Adresse für diesen Standort nicht gefunden.");
           }
@@ -82,7 +93,7 @@ export function AddressAutocomplete({
           setLocationError("Standort konnte nicht ermittelt werden.");
         }
       },
-      { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
     );
   }
 
@@ -188,6 +199,9 @@ export function AddressAutocomplete({
           </button>
           {locationError && (
             <span className="text-xs text-red-700">{locationError}</span>
+          )}
+          {!locationError && locationHint && (
+            <span className="text-xs text-amber-700 font-medium">{locationHint}</span>
           )}
         </div>
       )}
