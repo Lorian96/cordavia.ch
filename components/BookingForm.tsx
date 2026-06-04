@@ -495,6 +495,7 @@ function RouteStep({
           onChange={(v) => update("pickup", v)}
           error={pickupErr ? "Bitte vollständige Adresse angeben." : null}
           autoFocus
+          enableCurrentLocation
         />
         <AddressAutocomplete
           label="Zielort"

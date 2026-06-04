@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Crosshair } from "./icons";
 
 /**
  * Address autocomplete via eigener /api/places (Photon + Nominatim Fallback).
@@ -21,6 +22,7 @@ export function AddressAutocomplete({
   onChange,
   autoFocus,
   error,
+  enableCurrentLocation,
 }: {
   label: string;
   placeholder?: string;
@@ -28,15 +30,61 @@ export function AddressAutocomplete({
   onChange: (v: string) => void;
   autoFocus?: boolean;
   error?: string | null;
+  enableCurrentLocation?: boolean;
 }) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<PlaceResult[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const justSelectedRef = useRef(false);
+
+  function useCurrentLocation() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationError("Standort wird vom Browser nicht unterstützt.");
+      return;
+    }
+    setLocating(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(
+            `/api/places/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+          );
+          if (!res.ok) throw new Error("api");
+          const data = (await res.json()) as { result: PlaceResult | null };
+          if (data.result?.full) {
+            justSelectedRef.current = true;
+            setQuery(data.result.full);
+            onChange(data.result.full);
+            setOpen(false);
+          } else {
+            setLocationError("Adresse für diesen Standort nicht gefunden.");
+          }
+        } catch {
+          setLocationError("Standort-Adresse konnte nicht geladen werden.");
+        } finally {
+          setLocating(false);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocationError("Bitte Standortzugriff im Browser erlauben.");
+        } else if (err.code === err.TIMEOUT) {
+          setLocationError("Standortabfrage zu langsam — bitte erneut versuchen.");
+        } else {
+          setLocationError("Standort konnte nicht ermittelt werden.");
+        }
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
+    );
+  }
 
   useEffect(() => {
     setQuery(value);
@@ -122,6 +170,27 @@ export function AddressAutocomplete({
           autoComplete="off"
         />
       </label>
+      {enableCurrentLocation && (
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={useCurrentLocation}
+            disabled={locating}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-navy-900 bg-navy-50 hover:bg-teal-50 border border-navy-100 px-3 py-2 rounded-lg transition disabled:opacity-60"
+            aria-label="Aktuellen Standort verwenden"
+          >
+            {locating ? (
+              <span className="inline-block h-4 w-4 border-2 border-navy-900 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Crosshair className="h-4 w-4" />
+            )}
+            <span>{locating ? "Standort wird ermittelt…" : "Aktuellen Standort verwenden"}</span>
+          </button>
+          {locationError && (
+            <span className="text-xs text-red-700">{locationError}</span>
+          )}
+        </div>
+      )}
       {error && <p className="text-sm text-red-700 mt-1.5">{error}</p>}
       {open && (
         <ul
