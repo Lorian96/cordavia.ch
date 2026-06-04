@@ -43,7 +43,7 @@ export function Footer() {
                 <span>WhatsApp Chat</span>
               </a>
             </li>
-            <li className="text-navy-50/80">info@cordavia-transport.ch</li>
+            <li className="text-navy-50/80">info@cordavia.ch</li>
           </ul>
         </div>
 
