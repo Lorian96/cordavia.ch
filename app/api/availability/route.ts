@@ -102,8 +102,8 @@ export async function GET(_request: NextRequest) {
       },
       {
         headers: {
-          // Kurze CDN-Cache da Buchungen jederzeit reinkommen können
-          "Cache-Control": "public, max-age=10, s-maxage=30",
+          // No-cache: Buchungen kommen jederzeit rein, Verfügbarkeit muss live sein
+          "Cache-Control": "no-store, max-age=0",
         },
       }
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -109,42 +109,43 @@ export function BookingForm() {
 
   const today = useMemo(() => todayInZurich(), []);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const res = await fetch("/api/availability", { cache: "no-store" });
-        if (!res.ok) throw new Error("api");
-        const data = (await res.json()) as {
-          blockedByDate?: Record<string, string[]>;
-          fullDays?: string[];
-          error?: string;
-        };
-        if (cancelled) return;
-        setAvailability({
-          blockedByDate: data.blockedByDate ?? {},
-          fullDays: new Set(data.fullDays ?? []),
-          loaded: true,
-          error: data.error
-            ? "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an."
-            : null,
-        });
-      } catch {
-        if (cancelled) return;
-        setAvailability({
-          blockedByDate: {},
-          fullDays: new Set(),
-          loaded: true,
-          error:
-            "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an.",
-        });
-      }
+  const loadAvailability = useCallback(async () => {
+    try {
+      const res = await fetch("/api/availability", { cache: "no-store" });
+      if (!res.ok) throw new Error("api");
+      const data = (await res.json()) as {
+        blockedByDate?: Record<string, string[]>;
+        fullDays?: string[];
+        error?: string;
+      };
+      setAvailability({
+        blockedByDate: data.blockedByDate ?? {},
+        fullDays: new Set(data.fullDays ?? []),
+        loaded: true,
+        error: data.error
+          ? "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an."
+          : null,
+      });
+    } catch {
+      setAvailability({
+        blockedByDate: {},
+        fullDays: new Set(),
+        loaded: true,
+        error:
+          "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an.",
+      });
     }
-    load();
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    loadAvailability();
+  }, [loadAvailability]);
+
+  // Reload bei Eintritt in Schritt 3 (Datum & Zeit), damit immer aktuell
+  useEffect(() => {
+    if (step === 2) loadAvailability();
+  }, [step, loadAvailability]);
 
   const canContinue = useMemo(() => {
     switch (step) {
@@ -213,6 +214,7 @@ export function BookingForm() {
     setStep(0);
     setResult(null);
     setShowErrors(false);
+    loadAvailability();
   }
 
   if (result?.status === "ok") {
