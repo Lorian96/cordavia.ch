@@ -153,9 +153,7 @@ export function PriceCalculator() {
         <p className="text-xs text-navy-800/60">
           Dies ist eine unverbindliche Schätzung. Der endgültige Preis kann je nach
           Route, Verkehrslage und besonderen Anforderungen variieren. Wir
-          bestätigen Ihnen den finalen Preis vor der Fahrt. Bei medizinisch
-          indizierten Krankenfahrten übernimmt die obligatorische Krankenkasse die
-          Hälfte der Kosten bis CHF 500/Jahr.
+          bestätigen Ihnen den finalen Preis vor der Fahrt.
         </p>
       </div>
     </div>

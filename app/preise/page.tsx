@@ -108,14 +108,13 @@ export default function PreisePage() {
             </h2>
             <div className="space-y-4 text-lg text-navy-800/85 leading-relaxed">
               <p>
-                Bei medizinisch indizierten Fahrten übernimmt die <strong>obligatorische
-                Krankenpflegeversicherung (OKP)</strong> die Hälfte der Kosten — bis zu
-                einem jährlichen Maximalbetrag von CHF 500.
+                Bei medizinisch indizierten Fahrten kann ein Teil der Kosten über
+                die Krankenkasse abgerechnet werden — wir kümmern uns für Sie um
+                die gesamte Abrechnung.
               </p>
               <p>
-                <strong>Voraussetzung:</strong> Eine ärztliche Verordnung. Wir kümmern uns für
-                Sie um die Abrechnung mit der Krankenkasse — Sie müssen sich um
-                nichts kümmern.
+                <strong>Voraussetzung:</strong> Eine ärztliche Verordnung. Sie müssen sich
+                um nichts weiter kümmern.
               </p>
               <ul className="space-y-2 my-6">
                 <li className="flex items-start gap-3">
