@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { supabase, supabaseConfigured, type BookingRow } from "@/lib/supabase";
+import { notifyAdminOfBooking } from "@/lib/notify";
 
 type IncomingBooking = {
   transportType?: "krankenfahrt" | "liegend" | "rollstuhl" | "taxi";
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest) {
   } else {
     console.log("[booking] supabase not configured — booking received but NOT persisted", { bookingNumber, row });
   }
+
+  // Fire-and-forget admin email (errors logged, never block the response)
+  notifyAdminOfBooking(row).catch((err) => console.error("[booking] notify threw", err));
 
   return Response.json({ ok: true, bookingNumber });
 }
