@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { PriceCalculator } from "@/components/PriceCalculator";
-import { PRICES, formatChf, MINIMUM_FARE, SURCHARGE_PERCENT } from "@/lib/pricing";
+import { PRICES, formatChf, SURCHARGE_PERCENT } from "@/lib/pricing";
 import { Check, Phone } from "@/components/icons";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
@@ -88,7 +88,6 @@ export default function PreisePage() {
                     value={`+${SURCHARGE_PERCENT}%`}
                   />
                   <PriceRow label="Sonn- und Feiertage" value={`+${SURCHARGE_PERCENT}%`} />
-                  <PriceRow label="Mindestumsatz pro Fahrt" value={formatChf(MINIMUM_FARE)} />
                   <PriceRow label="Stornierung bis 2h vor Abholung" value="kostenlos" />
                 </dl>
               </div>
