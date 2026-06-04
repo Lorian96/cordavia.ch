@@ -177,7 +177,12 @@ function BookingRow({ booking: b }: { booking: Booking }) {
         </div>
         <div className="lg:border-l lg:pl-5 lg:border-navy-50 flex flex-col gap-2 justify-start">
           <p className="text-xs font-semibold text-navy-800/60 uppercase tracking-wide">Status setzen</p>
-          <StatusButtons id={b.id} current={b.status} bookingNumber={b.booking_number} />
+          <StatusButtons
+            id={b.id}
+            current={b.status}
+            bookingNumber={b.booking_number}
+            customerEmail={b.email && b.email.length > 0 ? b.email : null}
+          />
         </div>
       </div>
     </article>
