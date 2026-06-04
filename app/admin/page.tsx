@@ -1,5 +1,6 @@
 import { getSupabaseServer, type Booking } from "@/lib/supabaseServer";
 import { StatusButtons } from "./StatusButton";
+import { BookingPlanner } from "./BookingPlanner";
 
 export const dynamic = "force-dynamic";
 
@@ -87,11 +88,13 @@ export default async function AdminPage() {
       )}
 
       <div className="grid sm:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Offen" value={counts.pending} color="bg-amber-50 text-amber-900 border-amber-200" />
-        <StatCard label="Bestätigt" value={counts.confirmed} color="bg-teal-50 text-teal-900 border-teal-200" />
+        <StatCard label="Offen" value={counts.pending} color="bg-rose-50 text-rose-900 border-rose-200" />
+        <StatCard label="Bestätigt" value={counts.confirmed} color="bg-sky-50 text-sky-900 border-sky-200" />
         <StatCard label="Erledigt" value={counts.completed} color="bg-emerald-50 text-emerald-900 border-emerald-200" />
-        <StatCard label="Storniert" value={counts.cancelled} color="bg-rose-50 text-rose-900 border-rose-200" />
+        <StatCard label="Storniert" value={counts.cancelled} color="bg-slate-50 text-slate-900 border-slate-200" />
       </div>
+
+      <BookingPlanner bookings={bookings} />
 
       <Section title={`Bevorstehende Fahrten (${upcoming.length})`} bookings={upcoming} empty="Keine bevorstehenden Fahrten." />
       <Section title={`Vergangene Fahrten (${past.length})`} bookings={past} empty="Keine vergangenen Fahrten." collapsed />
@@ -142,7 +145,10 @@ function BookingRow({ booking: b }: { booking: Booking }) {
   if (b.note_insurance) notes.push("Krankenkasse");
 
   return (
-    <article className="bg-white rounded-2xl border border-navy-50 shadow-sm overflow-hidden">
+    <article
+      id={`booking-${b.id}`}
+      className="bg-white rounded-2xl border border-navy-50 shadow-sm overflow-hidden scroll-mt-24 transition-shadow"
+    >
       <div className="grid lg:grid-cols-[1fr_auto] gap-4 p-5">
         <div>
           <div className="flex flex-wrap items-baseline gap-3 mb-2">
