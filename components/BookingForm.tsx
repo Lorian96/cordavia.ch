@@ -68,6 +68,10 @@ function isValidSwissPhone(s: string): boolean {
   return /^(\+41|0041|0)[1-9]\d{8}$/.test(cleaned);
 }
 
+function isValidEmail(s: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+}
+
 export function BookingForm() {
   const [step, setStep] = useState(0);
   const [booking, setBooking] = useState<Booking>(emptyBooking);
@@ -93,7 +97,8 @@ export function BookingForm() {
         return (
           booking.firstName.trim().length > 1 &&
           booking.lastName.trim().length > 1 &&
-          isValidSwissPhone(booking.phone)
+          isValidEmail(booking.email) &&
+          (booking.phone.trim() === "" || isValidSwissPhone(booking.phone))
         );
       case 4:
         return true;
@@ -484,12 +489,16 @@ function ContactStep({
 }) {
   const firstErr = showErrors && booking.firstName.trim().length <= 1;
   const lastErr = showErrors && booking.lastName.trim().length <= 1;
-  const phoneErr = showErrors && !isValidSwissPhone(booking.phone);
+  const emailErr = showErrors && !isValidEmail(booking.email);
+  const phoneErr =
+    showErrors &&
+    booking.phone.trim() !== "" &&
+    !isValidSwissPhone(booking.phone);
   return (
     <>
       <StepHeader
         title="Ihre Kontaktdaten"
-        subtitle="Damit wir Sie zur Bestätigung erreichen können."
+        subtitle="Damit wir Ihnen die Buchungsbestätigung schicken können."
       />
       <div className="grid sm:grid-cols-2 gap-4 mb-5">
         <LabeledField
@@ -508,33 +517,34 @@ function ContactStep({
         />
         <div className="sm:col-span-2">
           <LabeledField
-            label="Telefonnummer"
+            label="E-Mail-Adresse"
+            type="email"
+            placeholder="ihre.mail@beispiel.ch"
+            value={booking.email}
+            onChange={(v) => update("email", v)}
+            autoComplete="email"
+            error={emailErr ? "Bitte gültige E-Mail-Adresse angeben." : null}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <LabeledField
+            label="Telefonnummer (optional)"
             type="tel"
             placeholder="+41 79 123 45 67"
             value={booking.phone}
             onChange={(v) => update("phone", v)}
             autoComplete="tel"
             error={phoneErr ? "Bitte gültige Schweizer Telefonnummer." : null}
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <LabeledField
-            label="E-Mail (optional)"
-            type="email"
-            placeholder="ihre.mail@beispiel.ch"
-            value={booking.email}
-            onChange={(v) => update("email", v)}
-            autoComplete="email"
-            hint="Falls Sie eine schriftliche Bestätigung wünschen."
+            hint="Falls wir Sie bei Rückfragen schnell erreichen sollen."
           />
         </div>
       </div>
       <div className="bg-navy-50 border border-navy-100 rounded-xl p-4 text-navy-900 text-sm flex gap-3 items-start">
         <Phone className="h-5 w-5 text-navy-900 shrink-0 mt-0.5" />
         <p>
-          <strong>Wir rufen Sie zur Bestätigung an.</strong> Eine E-Mail-Adresse
-          ist freiwillig – Sie erhalten dann zusätzlich eine schriftliche
-          Bestätigung.
+          <strong>Bestätigung per E-Mail.</strong> Sobald wir Ihre Fahrt
+          geprüft haben, erhalten Sie eine schriftliche Bestätigung an die
+          angegebene E-Mail-Adresse.
         </p>
       </div>
     </>
@@ -603,8 +613,8 @@ function Summary({ booking }: { booking: Booking }) {
         <SumRow label="Datum" value={formatDate(booking.date)} />
         <SumRow label="Abholzeit" value={booking.time} />
         <SumRow label="Name" value={`${booking.firstName} ${booking.lastName}`} />
-        <SumRow label="Telefon" value={booking.phone} />
-        {booking.email && <SumRow label="E-Mail" value={booking.email} />}
+        <SumRow label="E-Mail" value={booking.email} />
+        {booking.phone && <SumRow label="Telefon" value={booking.phone} />}
       </div>
       <p className="text-sm text-navy-800/70">
         Mit dem Absenden bestätigen Sie, dass die Angaben korrekt sind. Wir
@@ -663,10 +673,14 @@ function SuccessScreen({
           Vielen Dank, <strong>{booking.firstName} {booking.lastName}</strong>!
         </p>
         <p className="text-navy-800/80 mb-6 leading-relaxed">
-          Wir melden uns telefonisch unter{" "}
-          <strong className="text-navy-900">{booking.phone}</strong> zur
-          Bestätigung der Abholzeit. In der Regel innerhalb der nächsten 15
-          Minuten – an Werktagen während der Geschäftszeit.
+          Wir prüfen Ihre Fahrt und senden die Bestätigung an{" "}
+          <strong className="text-navy-900">{booking.email}</strong>.
+          {booking.phone ? (
+            <>
+              {" "}Bei Rückfragen melden wir uns auch telefonisch unter{" "}
+              <strong className="text-navy-900">{booking.phone}</strong>.
+            </>
+          ) : null}
         </p>
         <div className="grid sm:grid-cols-2 gap-3 mb-6">
           <SumRow

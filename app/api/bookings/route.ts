@@ -37,12 +37,15 @@ export async function POST(request: NextRequest) {
     "time",
     "firstName",
     "lastName",
-    "phone",
+    "email",
   ];
   for (const key of required) {
     if (!payload[key]) {
       return Response.json({ error: `Pflichtfeld fehlt: ${key}` }, { status: 400 });
     }
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email!.trim())) {
+    return Response.json({ error: "Bitte gültige E-Mail-Adresse angeben." }, { status: 400 });
   }
 
   const bookingNumber =
@@ -61,7 +64,7 @@ export async function POST(request: NextRequest) {
     ride_time: payload.time!,
     first_name: payload.firstName!.trim(),
     last_name: payload.lastName!.trim(),
-    phone: payload.phone!.trim(),
+    phone: payload.phone?.trim() || "",
     email: trimmedEmail || "",
     note_wheelchair: Boolean(payload.notes?.wheelchair),
     note_companion: Boolean(payload.notes?.companion),

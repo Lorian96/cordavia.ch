@@ -81,8 +81,8 @@ export async function notifyAdminOfBooking(row: BookingRow) {
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Abholung</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(row.pickup)}</td></tr>
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Ziel</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(row.destination)}</td></tr>
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Kunde</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><b>${esc(row.first_name)} ${esc(row.last_name)}</b></td></tr>
-            <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Telefon</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="tel:${esc(row.phone)}" style="color:#0B2545;">${esc(row.phone)}</a></td></tr>
             ${row.email && row.email.length > 0 ? `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">E-Mail</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="mailto:${esc(row.email)}" style="color:#0B2545;">${esc(row.email)}</a></td></tr>` : ""}
+            ${row.phone && row.phone.length > 0 ? `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Telefon</td><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="tel:${esc(row.phone)}" style="color:#0B2545;">${esc(row.phone)}</a></td></tr>` : ""}
             ${notes.length ? `<tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Hinweise</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(notes.join(", "))}</td></tr>` : ""}
             ${row.comment ? `<tr><td style="padding:8px 0;color:#64748b;vertical-align:top;">Kommentar</td><td style="padding:8px 0;white-space:pre-wrap;">${esc(row.comment)}</td></tr>` : ""}
           </table>
@@ -107,8 +107,8 @@ export async function notifyAdminOfBooking(row: BookingRow) {
     `Nach: ${row.destination}`,
     "",
     `Kunde: ${row.first_name} ${row.last_name}`,
-    `Telefon: ${row.phone}`,
     row.email && row.email.length > 0 ? `E-Mail: ${row.email}` : "",
+    row.phone && row.phone.length > 0 ? `Telefon: ${row.phone}` : "",
     notes.length ? `Hinweise: ${notes.join(", ")}` : "",
     row.comment ? `Kommentar: ${row.comment}` : "",
     "",
@@ -167,7 +167,10 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
     return;
   }
 
-  const subject = `Ihre Buchung ${row.booking_number} bei Cordavia`;
+  const subject = `Ihre Fahrt am ${fmtDate(row.ride_date)} ist bestätigt — Cordavia`;
+  const phoneLine = row.phone && row.phone.length > 0
+    ? `<p style="margin:0 0 16px 0;font-size:14px;color:#64748b;line-height:1.6;">Wir haben Ihre Telefonnummer <a href="tel:${esc(row.phone)}" style="color:#0B2545;">${esc(row.phone)}</a> für mögliche Rückfragen notiert.</p>`
+    : "";
 
   const html = `<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><title>${esc(subject)}</title></head>
@@ -177,18 +180,18 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
       <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(11,37,69,0.08);">
         <tr><td style="background:#0B2545;color:#fff;padding:24px 28px;">
           <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.7;">Cordavia</div>
-          <div style="font-size:24px;font-weight:700;margin-top:4px;">Vielen Dank für Ihre Buchung!</div>
+          <div style="font-size:24px;font-weight:700;margin-top:4px;">Ihre Fahrt ist bestätigt</div>
         </td></tr>
         <tr><td style="padding:28px;">
           <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;">
             Guten Tag <b>${esc(row.first_name)} ${esc(row.last_name)}</b>,
           </p>
           <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;">
-            wir haben Ihre Anfrage erhalten. Wir melden uns telefonisch unter
-            <a href="tel:${esc(row.phone)}" style="color:#0B2545;font-weight:600;">${esc(row.phone)}</a>
-            zur Bestätigung der genauen Abholzeit – in der Regel innerhalb der
-            nächsten 15 Minuten an Werktagen.
+            wir bestätigen Ihnen hiermit Ihre gebuchte Fahrt. Bitte sehen Sie
+            die Details unten und kontaktieren Sie uns, falls etwas geändert
+            werden muss.
           </p>
+          ${phoneLine}
           <div style="background:#f5f9fc;border-radius:12px;padding:18px 20px;margin:20px 0;">
             <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Buchungsnummer</div>
             <div style="font-size:22px;font-weight:700;font-family:'Courier New',monospace;letter-spacing:2px;">${esc(row.booking_number)}</div>
@@ -222,24 +225,24 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
 </body></html>`;
 
   const text = [
-    `Vielen Dank für Ihre Buchung, ${row.first_name} ${row.last_name}!`,
+    `Guten Tag ${row.first_name} ${row.last_name},`,
+    "",
+    "wir bestätigen Ihnen hiermit Ihre gebuchte Fahrt.",
     "",
     `Buchungsnummer: ${row.booking_number}`,
-    "",
     `Transport: ${TRANSPORT_LABEL[row.transport_type]}`,
     `Datum: ${fmtDate(row.ride_date)}`,
-    `Gewünschte Abholzeit: ${row.ride_time}`,
+    `Abholzeit: ${row.ride_time}`,
     `Abholort: ${row.pickup}`,
     `Zielort: ${row.destination}`,
+    row.phone && row.phone.length > 0 ? `Ihre Telefon-Nr.: ${row.phone}` : "",
     "",
-    "Wir melden uns telefonisch zur Bestätigung der Abholzeit.",
-    "",
-    `Bei Fragen: ${PHONE_DISPLAY} oder ${EMAIL}`,
+    `Bei Fragen oder Änderungen: ${PHONE_DISPLAY} oder ${EMAIL}`,
     "",
     "Herzliche Grüsse,",
     "Ihr Cordavia-Team",
     "cordavia.ch",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   const res = await sendResend({
     from,
