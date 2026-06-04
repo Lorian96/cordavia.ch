@@ -31,6 +31,12 @@ create index if not exists bookings_ride_date_idx on public.bookings (ride_date)
 create index if not exists bookings_status_idx on public.bookings (status);
 create index if not exists bookings_email_idx on public.bookings (email);
 
+grant usage on schema public to anon, authenticated;
+grant select, insert on public.bookings to anon;
+grant select, insert, update on public.bookings to authenticated;
+grant select, insert, update, delete on public.bookings to service_role;
+grant usage on all sequences in schema public to anon, authenticated;
+
 alter table public.bookings enable row level security;
 
 drop policy if exists "Anyone can create a booking" on public.bookings;
