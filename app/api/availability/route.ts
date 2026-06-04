@@ -2,26 +2,20 @@ import type { NextRequest } from "next/server";
 import { getSupabaseServer } from "@/lib/supabaseServer";
 
 /**
- * Liefert blockierte Zeitslots pro Datum und voll-belegte Tage.
+ * Liefert pro Datum die Liste der bestehenden Buchungszeiten (pending+confirmed)
+ * + welche Tage komplett ausgebucht sind.
  *
- * Slot-System:
- *  - Slots in 10-Minuten-Schritten von 06:00 bis 22:00 (97 Slots/Tag)
- *  - Pro Buchung (status: pending oder confirmed) werden 4 Slots blockiert:
- *    der gebuchte Slot + 3 darauf folgende = 40 Min Puffer
+ * Logik:
+ *  - Buffer: 45 Min zwischen Buchungen (bidirektional)
+ *  - Ein neuer Termin T ist gültig wenn: |T - tA| >= 45 für alle bestehenden tA
+ *  - Service-Fenster: 06:00 bis 22:00
+ *  - Tag voll = keine einzige Minute in [06:00, 22:00] ist gültig
  *  - Cancelled & completed Buchungen blockieren NICHT
- *
- * Response:
- *  {
- *    blockedByDate: { "YYYY-MM-DD": ["HH:MM", ...] },
- *    fullDays: ["YYYY-MM-DD", ...],
- *    slotStart: "06:00", slotEnd: "22:00", stepMinutes: 10
- *  }
  */
 
-const SLOT_START_MIN = 6 * 60; // 06:00
-const SLOT_END_MIN = 22 * 60;  // 22:00 inclusive
-const SLOT_STEP = 10;
-const BLOCK_SLOTS = 4; // booking slot + 3 buffer = 40 min total
+const BUFFER_MINUTES = 45;
+const SERVICE_START = "06:00";
+const SERVICE_END = "22:00";
 const BLOCKING_STATUSES = ["pending", "confirmed"];
 
 function timeToMin(t: string): number {
@@ -29,22 +23,37 @@ function timeToMin(t: string): number {
   return h * 60 + (m || 0);
 }
 
-function minToTime(m: number): string {
-  const h = Math.floor(m / 60);
-  const mm = m % 60;
-  return `${String(h).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+function isFreeMinute(t: number, existing: number[], buffer: number): boolean {
+  for (const tA of existing) {
+    if (Math.abs(t - tA) < buffer) return false;
+  }
+  return true;
 }
 
-function totalSlotCount(): number {
-  return Math.floor((SLOT_END_MIN - SLOT_START_MIN) / SLOT_STEP) + 1;
+function hasAnyFreeMinute(
+  existing: number[],
+  buffer: number,
+  start: number,
+  end: number
+): boolean {
+  for (let t = start; t <= end; t++) {
+    if (isFreeMinute(t, existing, buffer)) return true;
+  }
+  return false;
 }
 
 function todayInZurich(): string {
-  // YYYY-MM-DD in Europe/Zurich
   return new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Zurich" });
 }
 
 export async function GET(_request: NextRequest) {
+  const baseResponse = {
+    bookingTimesByDate: {} as Record<string, string[]>,
+    fullDays: [] as string[],
+    bufferMinutes: BUFFER_MINUTES,
+    serviceWindow: { start: SERVICE_START, end: SERVICE_END },
+  };
+
   try {
     const sb = getSupabaseServer();
     const today = todayInZurich();
@@ -58,59 +67,39 @@ export async function GET(_request: NextRequest) {
     if (error) {
       console.error("[availability] supabase error", error);
       return Response.json(
-        { blockedByDate: {}, fullDays: [], error: "db" },
+        { ...baseResponse, error: "db" },
         { status: 200, headers: { "Cache-Control": "no-store" } }
       );
     }
 
-    const blockedByDate: Record<string, Set<string>> = {};
-
+    const bookingTimesByDate: Record<string, string[]> = {};
     for (const row of (data ?? []) as { ride_date: string; ride_time: string }[]) {
+      const time = row.ride_time.slice(0, 5); // "HH:MM:SS" → "HH:MM"
       const date = row.ride_date;
-      const minutes = timeToMin(row.ride_time);
-      const startSlotMin = Math.floor(minutes / SLOT_STEP) * SLOT_STEP;
-
-      if (!blockedByDate[date]) blockedByDate[date] = new Set();
-
-      for (let i = 0; i < BLOCK_SLOTS; i++) {
-        const slotMin = startSlotMin + i * SLOT_STEP;
-        if (slotMin >= SLOT_START_MIN && slotMin <= SLOT_END_MIN) {
-          blockedByDate[date].add(minToTime(slotMin));
-        }
-      }
+      if (!bookingTimesByDate[date]) bookingTimesByDate[date] = [];
+      bookingTimesByDate[date].push(time);
     }
 
-    const blockedOut: Record<string, string[]> = {};
+    const serviceStartMin = timeToMin(SERVICE_START);
+    const serviceEndMin = timeToMin(SERVICE_END);
     const fullDays: string[] = [];
-    const totalSlots = totalSlotCount();
 
-    for (const [date, set] of Object.entries(blockedByDate)) {
-      blockedOut[date] = Array.from(set).sort();
-      if (set.size >= totalSlots) {
+    for (const [date, times] of Object.entries(bookingTimesByDate)) {
+      const mins = times.map(timeToMin);
+      if (!hasAnyFreeMinute(mins, BUFFER_MINUTES, serviceStartMin, serviceEndMin)) {
         fullDays.push(date);
       }
+      times.sort();
     }
 
     return Response.json(
-      {
-        blockedByDate: blockedOut,
-        fullDays,
-        slotStart: minToTime(SLOT_START_MIN),
-        slotEnd: minToTime(SLOT_END_MIN),
-        stepMinutes: SLOT_STEP,
-        bufferMinutes: BLOCK_SLOTS * SLOT_STEP,
-      },
-      {
-        headers: {
-          // No-cache: Buchungen kommen jederzeit rein, Verfügbarkeit muss live sein
-          "Cache-Control": "no-store, max-age=0",
-        },
-      }
+      { ...baseResponse, bookingTimesByDate, fullDays },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
     );
   } catch (err) {
     console.error("[availability] threw", err);
     return Response.json(
-      { blockedByDate: {}, fullDays: [], error: "server" },
+      { ...baseResponse, error: "server" },
       { status: 200, headers: { "Cache-Control": "no-store" } }
     );
   }

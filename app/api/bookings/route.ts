@@ -1,6 +1,16 @@
 import type { NextRequest } from "next/server";
 import { supabase, supabaseConfigured, type BookingRow } from "@/lib/supabase";
+import { getSupabaseServer } from "@/lib/supabaseServer";
 import { notifyAdminOfBooking } from "@/lib/notify";
+
+const BUFFER_MINUTES = 45;
+const SERVICE_START_MIN = 6 * 60;
+const SERVICE_END_MIN = 22 * 60;
+
+function timeToMin(t: string): number {
+  const [h, m] = t.split(":").map((x) => parseInt(x, 10));
+  return h * 60 + (m || 0);
+}
 
 type IncomingBooking = {
   transportType?: "krankenfahrt" | "liegend" | "rollstuhl" | "taxi";
@@ -46,6 +56,44 @@ export async function POST(request: NextRequest) {
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email!.trim())) {
     return Response.json({ error: "Bitte gültige E-Mail-Adresse angeben." }, { status: 400 });
+  }
+
+  // Zeit-Validierung: Service-Fenster + Puffer gegen bestehende Buchungen
+  if (!/^\d{2}:\d{2}$/.test(payload.time!)) {
+    return Response.json({ error: "Ungültiges Zeit-Format." }, { status: 400 });
+  }
+  const requestedMin = timeToMin(payload.time!);
+  if (requestedMin < SERVICE_START_MIN || requestedMin > SERVICE_END_MIN) {
+    return Response.json(
+      { error: "Wir fahren von 06:00 bis 22:00. Für andere Zeiten bitte anrufen." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const adminSb = getSupabaseServer();
+    const { data: existing, error: fetchErr } = await adminSb
+      .from("bookings")
+      .select("ride_time, booking_number")
+      .eq("ride_date", payload.date!)
+      .in("status", ["pending", "confirmed"]);
+    if (!fetchErr && existing) {
+      for (const r of existing as { ride_time: string; booking_number: string }[]) {
+        const otherMin = timeToMin(r.ride_time);
+        if (Math.abs(requestedMin - otherMin) < BUFFER_MINUTES) {
+          return Response.json(
+            {
+              error: `Die gewählte Zeit ist zu nah an einer bestehenden Buchung. Mindestens ${BUFFER_MINUTES} Min Abstand nötig.`,
+            },
+            { status: 409 }
+          );
+        }
+      }
+    }
+  } catch (err) {
+    // Falls die Validierung serverseitig nicht klappt, akzeptieren wir die Buchung
+    // (Admin sieht es im Dashboard). Loggen und weiter.
+    console.error("[booking] availability check failed", err);
   }
 
   const bookingNumber =

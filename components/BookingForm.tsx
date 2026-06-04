@@ -56,21 +56,44 @@ const STEPS = [
   "Bestätigung",
 ] as const;
 
-function generateAllTimeSlots(): string[] {
-  const out: string[] = [];
-  for (let h = 6; h <= 22; h++) {
-    for (let m = 0; m < 60; m += 10) {
-      if (h === 22 && m > 0) break;
-      out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-    }
-  }
-  return out;
-}
-
-const ALL_TIME_SLOTS = generateAllTimeSlots();
-
 function todayInZurich(): string {
   return new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Zurich" });
+}
+
+function timeToMin(t: string): number {
+  if (!t) return -1;
+  const [h, m] = t.split(":").map((x) => parseInt(x, 10));
+  return h * 60 + (m || 0);
+}
+
+function minToTime(m: number): string {
+  const h = Math.floor(m / 60);
+  const mm = m % 60;
+  return `${String(h).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+}
+
+function findNearestFreeBefore(
+  t: number,
+  existing: number[],
+  buffer: number,
+  start: number
+): number | null {
+  for (let candidate = t - 1; candidate >= start; candidate--) {
+    if (existing.every((tA) => Math.abs(candidate - tA) >= buffer)) return candidate;
+  }
+  return null;
+}
+
+function findNearestFreeAfter(
+  t: number,
+  existing: number[],
+  buffer: number,
+  end: number
+): number | null {
+  for (let candidate = t + 1; candidate <= end; candidate++) {
+    if (existing.every((tA) => Math.abs(candidate - tA) >= buffer)) return candidate;
+  }
+  return null;
 }
 
 function isValidSwissPhone(s: string): boolean {
@@ -84,10 +107,21 @@ function isValidEmail(s: string): boolean {
 }
 
 type Availability = {
-  blockedByDate: Record<string, string[]>;
+  bookingTimesByDate: Record<string, string[]>;
   fullDays: Set<string>;
+  bufferMinutes: number;
+  serviceWindow: { start: string; end: string };
   loaded: boolean;
   error: string | null;
+};
+
+const DEFAULT_AVAILABILITY: Availability = {
+  bookingTimesByDate: {},
+  fullDays: new Set(),
+  bufferMinutes: 45,
+  serviceWindow: { start: "06:00", end: "22:00" },
+  loaded: false,
+  error: null,
 };
 
 export function BookingForm() {
@@ -100,12 +134,7 @@ export function BookingForm() {
     | null
   >(null);
   const [showErrors, setShowErrors] = useState(false);
-  const [availability, setAvailability] = useState<Availability>({
-    blockedByDate: {},
-    fullDays: new Set(),
-    loaded: false,
-    error: null,
-  });
+  const [availability, setAvailability] = useState<Availability>(DEFAULT_AVAILABILITY);
 
   const today = useMemo(() => todayInZurich(), []);
 
@@ -114,13 +143,17 @@ export function BookingForm() {
       const res = await fetch("/api/availability", { cache: "no-store" });
       if (!res.ok) throw new Error("api");
       const data = (await res.json()) as {
-        blockedByDate?: Record<string, string[]>;
+        bookingTimesByDate?: Record<string, string[]>;
         fullDays?: string[];
+        bufferMinutes?: number;
+        serviceWindow?: { start: string; end: string };
         error?: string;
       };
       setAvailability({
-        blockedByDate: data.blockedByDate ?? {},
+        bookingTimesByDate: data.bookingTimesByDate ?? {},
         fullDays: new Set(data.fullDays ?? []),
+        bufferMinutes: data.bufferMinutes ?? 45,
+        serviceWindow: data.serviceWindow ?? { start: "06:00", end: "22:00" },
         loaded: true,
         error: data.error
           ? "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an."
@@ -128,8 +161,7 @@ export function BookingForm() {
       });
     } catch {
       setAvailability({
-        blockedByDate: {},
-        fullDays: new Set(),
+        ...DEFAULT_AVAILABILITY,
         loaded: true,
         error:
           "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an.",
@@ -147,14 +179,30 @@ export function BookingForm() {
     if (step === 2) loadAvailability();
   }, [step, loadAvailability]);
 
+  const nowMinutes = useMemo(() => {
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }, []);
+
   const canContinue = useMemo(() => {
     switch (step) {
       case 0:
         return booking.transportType !== null;
       case 1:
         return booking.pickup.trim().length > 3 && booking.destination.trim().length > 3;
-      case 2:
-        return booking.date !== "" && booking.date >= today && booking.time !== "";
+      case 2: {
+        if (!booking.date || booking.date < today || !booking.time) return false;
+        const t = timeToMin(booking.time);
+        const sStart = timeToMin(availability.serviceWindow.start);
+        const sEnd = timeToMin(availability.serviceWindow.end);
+        if (t < sStart || t > sEnd) return false;
+        if (booking.date === today && t <= nowMinutes) return false;
+        const existing = (availability.bookingTimesByDate[booking.date] ?? []).map(timeToMin);
+        for (const tA of existing) {
+          if (Math.abs(t - tA) < availability.bufferMinutes) return false;
+        }
+        return true;
+      }
       case 3:
         return (
           booking.firstName.trim().length > 1 &&
@@ -167,7 +215,7 @@ export function BookingForm() {
       default:
         return true;
     }
-  }, [step, booking, today]);
+  }, [step, booking, today, availability, nowMinutes]);
 
   function update<K extends keyof Booking>(key: K, value: Booking[K]) {
     setBooking((b) => ({ ...b, [key]: value }));
@@ -197,7 +245,15 @@ export function BookingForm() {
         body: JSON.stringify(booking),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Unbekannter Fehler");
+      if (!res.ok) {
+        // Bei Zeitkonflikt (409): zurück zu Schritt 3 + Verfügbarkeit neu laden
+        if (res.status === 409) {
+          await loadAvailability();
+          setStep(2);
+          setShowErrors(true);
+        }
+        throw new Error(data.error ?? "Unbekannter Fehler");
+      }
       setResult({ status: "ok", bookingNumber: data.bookingNumber });
     } catch (err) {
       setResult({
@@ -465,42 +521,77 @@ function DateTimeStep({
   showErrors: boolean;
   availability: Availability;
 }) {
-  const dateErr =
-    showErrors && (booking.date === "" || booking.date < minDate);
-  const timeErr = showErrors && booking.time === "";
-
-  // Slots für das gewählte Datum berechnen
   const todayStr = minDate;
   const nowMinutes = useMemo(() => {
     const d = new Date();
     return d.getHours() * 60 + d.getMinutes();
   }, []);
 
-  const availableSlots = useMemo(() => {
-    if (!booking.date) return [];
-    const blocked = new Set(availability.blockedByDate[booking.date] ?? []);
-    return ALL_TIME_SLOTS.filter((slot) => {
-      if (blocked.has(slot)) return false;
-      if (booking.date === todayStr) {
-        const [h, m] = slot.split(":").map(Number);
-        if (h * 60 + m <= nowMinutes) return false;
-      }
-      return true;
-    });
-  }, [booking.date, availability.blockedByDate, todayStr, nowMinutes]);
+  const existingTimes = useMemo(
+    () => availability.bookingTimesByDate[booking.date] ?? [],
+    [availability.bookingTimesByDate, booking.date]
+  );
+  const existingMins = useMemo(() => existingTimes.map(timeToMin), [existingTimes]);
 
-  // Bei Änderung von Datum / Verfügbarkeit: ungültige Zeit zurücksetzen
-  useEffect(() => {
-    if (booking.time && !availableSlots.includes(booking.time)) {
-      update("time", "");
+  const serviceStartMin = timeToMin(availability.serviceWindow.start);
+  const serviceEndMin = timeToMin(availability.serviceWindow.end);
+
+  // Live-Validierung der gewählten Zeit
+  const timeCheck = useMemo(() => {
+    if (!booking.time) return { ok: false, reason: null as string | null, suggestion: null as string | null };
+    const t = timeToMin(booking.time);
+
+    if (t < serviceStartMin || t > serviceEndMin) {
+      return {
+        ok: false,
+        reason: `Wir fahren von ${availability.serviceWindow.start} bis ${availability.serviceWindow.end} Uhr. Für andere Zeiten bitte anrufen.`,
+        suggestion: null,
+      };
     }
-  }, [availableSlots, booking.time, update]);
+
+    if (booking.date === todayStr && t <= nowMinutes) {
+      return {
+        ok: false,
+        reason: "Bitte eine Zeit in der Zukunft wählen.",
+        suggestion: null,
+      };
+    }
+
+    const conflict = existingMins.find((tA) => Math.abs(t - tA) < availability.bufferMinutes);
+    if (conflict !== undefined) {
+      const after = findNearestFreeAfter(t, existingMins, availability.bufferMinutes, serviceEndMin);
+      const before = findNearestFreeBefore(t, existingMins, availability.bufferMinutes, serviceStartMin);
+      const parts: string[] = [];
+      if (after !== null) parts.push(`ab ${minToTime(after)}`);
+      if (before !== null) parts.push(`vor ${minToTime(before)}`);
+      return {
+        ok: false,
+        reason: `Konflikt mit Buchung um ${minToTime(conflict)}. Mindestens ${availability.bufferMinutes} Min Abstand nötig.`,
+        suggestion: parts.length ? `Verfügbar ${parts.join(" oder ")}.` : null,
+      };
+    }
+
+    return { ok: true, reason: null, suggestion: null };
+  }, [booking.time, booking.date, todayStr, nowMinutes, existingMins, availability.bufferMinutes, availability.serviceWindow, serviceStartMin, serviceEndMin]);
+
+  const dateErr =
+    showErrors && (booking.date === "" || booking.date < minDate);
+  const timeErr =
+    showErrors && (booking.time === "" || !timeCheck.ok);
+
+  // Bei Wechsel des Datums: ggf. ungültige Zeit zurücksetzen wenn sie nicht passt
+  useEffect(() => {
+    if (booking.time && booking.date && !timeCheck.ok) {
+      // Lasse die Zeit stehen, aber Validierung zeigt's an.
+      // (Nicht automatisch leeren — User soll seine Eingabe sehen)
+    }
+  }, [booking.time, booking.date, timeCheck.ok]);
 
   return (
     <>
       <StepHeader
         title="Wann möchten Sie fahren?"
-        subtitle="Datum und Abholzeit wählen — bereits belegte Zeiten sind ausgeblendet."
+        subtitle="Datum und Uhrzeit frei wählen — Mindestabstand zwischen Fahrten ist 45 Minuten."
       />
 
       {availability.error && (
@@ -508,10 +599,7 @@ function DateTimeStep({
           <p className="font-semibold mb-1">⚠ Verfügbarkeit nicht ladbar</p>
           <p>
             {availability.error}{" "}
-            <a
-              href={`tel:${PHONE_TEL}`}
-              className="font-bold underline whitespace-nowrap"
-            >
+            <a href={`tel:${PHONE_TEL}`} className="font-bold underline whitespace-nowrap">
               {PHONE_DISPLAY}
             </a>
           </p>
@@ -520,9 +608,7 @@ function DateTimeStep({
 
       <div className="space-y-6">
         <div>
-          <span className="block text-base font-semibold text-navy-900 mb-2">
-            Datum
-          </span>
+          <span className="block text-base font-semibold text-navy-900 mb-2">Datum</span>
           <DatePicker
             value={booking.date || null}
             onSelect={(d) => update("date", d)}
@@ -530,17 +616,32 @@ function DateTimeStep({
             disabledDates={availability.fullDays}
           />
           {dateErr && (
-            <p className="text-sm text-red-700 mt-2">
-              Bitte ein Datum wählen.
-            </p>
+            <p className="text-sm text-red-700 mt-2">Bitte ein Datum wählen.</p>
           )}
         </div>
 
         {booking.date && (
           <div>
-            <span className="block text-base font-semibold text-navy-900 mb-2">
-              Verfügbare Abholzeit am {formatDate(booking.date)}
-            </span>
+            <label className="block">
+              <span className="block text-base font-semibold text-navy-900 mb-2">
+                Abholzeit am {formatDate(booking.date)}
+              </span>
+              <input
+                type="time"
+                value={booking.time}
+                min={availability.serviceWindow.start}
+                max={availability.serviceWindow.end}
+                onChange={(e) => update("time", e.target.value)}
+                step={60}
+                className={`w-full sm:max-w-xs text-xl font-bold rounded-2xl border-2 px-4 py-3 outline-none transition ${
+                  timeErr || (booking.time && !timeCheck.ok)
+                    ? "border-red-400 bg-red-50 focus:border-red-500"
+                    : "border-navy-50 focus:border-teal-500"
+                }`}
+                inputMode="numeric"
+                aria-invalid={Boolean(timeErr) || (Boolean(booking.time) && !timeCheck.ok)}
+              />
+            </label>
 
             {!availability.loaded && (
               <div className="text-navy-800/65 text-sm flex items-center gap-2 py-3">
@@ -549,49 +650,24 @@ function DateTimeStep({
               </div>
             )}
 
-            {availability.loaded && availableSlots.length === 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 text-sm">
-                <p className="font-semibold mb-1">
-                  Für diesen Tag sind keine Zeiten mehr verfügbar.
-                </p>
-                <p>
-                  Bitte wählen Sie einen anderen Tag oder rufen Sie uns an –{" "}
-                  <a
-                    href={`tel:${PHONE_TEL}`}
-                    className="font-bold underline whitespace-nowrap"
-                  >
-                    {PHONE_DISPLAY}
-                  </a>
-                </p>
+            {booking.time && !timeCheck.ok && timeCheck.reason && (
+              <div className="mt-3 bg-red-50 border border-red-200 rounded-xl p-3 text-red-900 text-sm">
+                <p className="font-semibold">{timeCheck.reason}</p>
+                {timeCheck.suggestion && <p className="mt-1">{timeCheck.suggestion}</p>}
               </div>
             )}
 
-            {availability.loaded && availableSlots.length > 0 && (
-              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
-                {availableSlots.map((t) => {
-                  const active = booking.time === t;
-                  return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => update("time", t)}
-                      className={`py-2.5 rounded-lg text-sm sm:text-base font-bold border-2 transition min-h-[44px] ${
-                        active
-                          ? "bg-teal-500 border-teal-500 text-navy-950"
-                          : "bg-white border-navy-50 text-navy-900 hover:border-teal-400"
-                      }`}
-                      aria-pressed={active}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
+            {showErrors && !booking.time && (
+              <p className="text-sm text-red-700 mt-2">Bitte eine Uhrzeit wählen.</p>
             )}
 
-            {timeErr && (
-              <p className="text-sm text-red-700 mt-2">
-                Bitte eine Uhrzeit wählen.
+            {existingTimes.length > 0 && (
+              <p className="text-sm text-navy-800/65 mt-3">
+                Bereits gebuchte Termine an diesem Tag:{" "}
+                <span className="font-mono text-navy-900 font-semibold">
+                  {existingTimes.join(", ")}
+                </span>
+                {" "}— bitte mindestens {availability.bufferMinutes} Min Abstand.
               </p>
             )}
           </div>
@@ -601,8 +677,9 @@ function DateTimeStep({
           <p className="font-semibold mb-1">Hinweis</p>
           <p>
             Wir bestätigen die genaue Abholzeit nach Eingang Ihrer Buchung
-            schriftlich. Pro Fahrt wird ein Puffer von 40 Minuten berücksichtigt.
-            Andere Zeit nötig? Rufen Sie uns an –{" "}
+            schriftlich. Zwischen zwei Fahrten lassen wir{" "}
+            <strong>{availability.bufferMinutes} Min Puffer</strong>. Andere Zeit
+            nötig? Rufen Sie uns an –{" "}
             <a
               href={`tel:${PHONE_TEL}`}
               className="text-teal-700 font-semibold underline whitespace-nowrap"
