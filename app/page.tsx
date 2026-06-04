@@ -25,11 +25,11 @@ export default function Home() {
                 Online-Buchung
               </span>
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-navy-900 mb-4">
-                Fahrt anfragen — in fünf Schritten
+                Fahrt buchen — in fünf Schritten
               </h2>
               <p className="text-xl text-navy-800/80 leading-relaxed">
-                Einfach, übersichtlich, ohne E-Mail-Adresse. Wir rufen Sie zur
-                Bestätigung an.
+                Einfach und übersichtlich. Wir rufen Sie zur Bestätigung an –
+                E-Mail-Bestätigung auf Wunsch.
               </p>
             </div>
             <BookingForm />

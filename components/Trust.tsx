@@ -9,29 +9,29 @@ type Pillar = {
 
 const pillars: Pillar[] = [
   {
-    icon: <HeartPulse className="h-7 w-7" />,
-    title: "Medizinische Kompetenz",
-    text: "Geschultes Fachpersonal mit Erfahrung in Patientenbegleitung. Zertifizierte Rückhaltesysteme und sanitärtechnisch ausgerüstete Fahrzeuge.",
+    icon: <Clock className="h-7 w-7" />,
+    title: "24/7 Verfügbarkeit",
+    text: "Tag und Nacht, an 365 Tagen im Jahr. Auch an Wochenenden und Feiertagen – einfach anrufen.",
   },
   {
     icon: <Shield className="h-7 w-7" />,
     title: "Sicherheit zuerst",
-    text: "Geprüfte Fahrzeuge, Hublift für Rollstühle, sichere Fixierung. Wir arbeiten nach den Standards des medizinischen Krankentransports.",
+    text: "Geprüfte Fahrzeuge, geschultes Personal und zertifizierte Rückhaltesysteme – im Taxi wie im Krankentransport.",
   },
   {
-    icon: <Clock className="h-7 w-7" />,
-    title: "Rund um die Uhr für Sie",
-    text: "24 Stunden am Tag, 365 Tage im Jahr. Auch an Wochenenden und Feiertagen. Termine planen oder kurzfristig anrufen – wir sind da.",
+    icon: <HeartPulse className="h-7 w-7" />,
+    title: "Mit Herz & Erfahrung",
+    text: "Ob Stadtbummel oder Klinikfahrt – wir nehmen uns Zeit. Besonders für Senioren und Menschen mit Einschränkungen.",
   },
 ];
 
 const credentials = [
+  "Faire, transparente Preise",
   "Krankenkassen-Abrechnung",
-  "Medizinisch geschultes Personal",
-  "Zertifizierte Rückhaltesysteme",
+  "Geschultes Personal",
   "Hublift & barrierefreie Fahrzeuge",
+  "Zertifizierte Rückhaltesysteme",
   "Schweizer Qualitätsstandards",
-  "Versichert nach SVG",
 ];
 
 export function Trust() {
@@ -46,8 +46,8 @@ export function Trust() {
             Verlässlich. Menschlich. Professionell.
           </h2>
           <p className="text-xl text-navy-800/80 leading-relaxed">
-            Cordavia steht für medizinischen Transport mit Ruhe und Erfahrung.
-            Wir begleiten Patientinnen und Patienten – nicht nur fahren wir sie.
+            Cordavia ist Ihr Transportpartner für Taxi und Krankenfahrten.
+            Pünktlich, freundlich und mit Erfahrung – auf jedem Weg.
           </p>
         </div>
 

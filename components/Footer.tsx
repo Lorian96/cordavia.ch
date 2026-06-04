@@ -17,9 +17,9 @@ export function Footer() {
             <span className="text-xl font-bold">Cordavia</span>
           </div>
           <p className="text-navy-50/80 leading-relaxed">
-            Medizinischer Transportdienst.
+            Ihr Taxi und Krankentransport.
             <br />
-            Wir begleiten Sie – nicht nur fahren wir Sie.
+            Wir kümmern uns – auf jedem Weg.
           </p>
         </div>
 

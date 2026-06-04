@@ -12,6 +12,7 @@ import {
   TaxiCar,
   Wheelchair,
 } from "./icons";
+import { AddressAutocomplete } from "./AddressAutocomplete";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
 type TransportType = "krankenfahrt" | "liegend" | "rollstuhl" | "taxi" | null;
@@ -25,6 +26,7 @@ type Booking = {
   firstName: string;
   lastName: string;
   phone: string;
+  email: string;
 };
 
 const emptyBooking: Booking = {
@@ -36,6 +38,7 @@ const emptyBooking: Booking = {
   firstName: "",
   lastName: "",
   phone: "",
+  email: "",
 };
 
 const TRANSPORT_LABELS: Record<Exclude<TransportType, null>, string> = {
@@ -357,24 +360,22 @@ function RouteStep({
     <>
       <StepHeader
         title="Wo geht die Fahrt los, wohin?"
-        subtitle="Geben Sie Abhol- und Zielort an."
+        subtitle="Beginnen Sie zu tippen – wir schlagen Adressen vor."
       />
       <div className="space-y-5">
-        <LabeledField
+        <AddressAutocomplete
           label="Abholort"
-          placeholder="z.B. Musterstrasse 12, 8001 Zürich"
+          placeholder="z.B. Bahnhofstrasse 1, 8001 Zürich"
           value={booking.pickup}
           onChange={(v) => update("pickup", v)}
-          autoComplete="street-address"
           error={pickupErr ? "Bitte vollständige Adresse angeben." : null}
           autoFocus
         />
-        <LabeledField
+        <AddressAutocomplete
           label="Zielort"
           placeholder="z.B. Kantonsspital St.Gallen"
           value={booking.destination}
           onChange={(v) => update("destination", v)}
-          autoComplete="off"
           error={destErr ? "Bitte Zielort angeben." : null}
         />
       </div>
@@ -490,7 +491,7 @@ function ContactStep({
         title="Ihre Kontaktdaten"
         subtitle="Damit wir Sie zur Bestätigung erreichen können."
       />
-      <div className="grid sm:grid-cols-2 gap-4 mb-6">
+      <div className="grid sm:grid-cols-2 gap-4 mb-5">
         <LabeledField
           label="Vorname"
           value={booking.firstName}
@@ -516,12 +517,24 @@ function ContactStep({
             error={phoneErr ? "Bitte gültige Schweizer Telefonnummer." : null}
           />
         </div>
+        <div className="sm:col-span-2">
+          <LabeledField
+            label="E-Mail (optional)"
+            type="email"
+            placeholder="ihre.mail@beispiel.ch"
+            value={booking.email}
+            onChange={(v) => update("email", v)}
+            autoComplete="email"
+            hint="Falls Sie eine schriftliche Bestätigung wünschen."
+          />
+        </div>
       </div>
       <div className="bg-navy-50 border border-navy-100 rounded-xl p-4 text-navy-900 text-sm flex gap-3 items-start">
         <Phone className="h-5 w-5 text-navy-900 shrink-0 mt-0.5" />
         <p>
           <strong>Wir rufen Sie zur Bestätigung an.</strong> Eine E-Mail-Adresse
-          ist nicht erforderlich – wir melden uns telefonisch oder per WhatsApp.
+          ist freiwillig – Sie erhalten dann zusätzlich eine schriftliche
+          Bestätigung.
         </p>
       </div>
     </>
@@ -537,6 +550,7 @@ function LabeledField({
   autoComplete,
   error,
   autoFocus,
+  hint,
 }: {
   label: string;
   value: string;
@@ -546,6 +560,7 @@ function LabeledField({
   autoComplete?: string;
   error?: string | null;
   autoFocus?: boolean;
+  hint?: string;
 }) {
   return (
     <label className="block">
@@ -564,6 +579,9 @@ function LabeledField({
         }`}
         aria-invalid={Boolean(error)}
       />
+      {hint && !error && (
+        <p className="text-sm text-navy-800/60 mt-1.5">{hint}</p>
+      )}
       {error && (
         <p className="text-sm text-red-700 mt-1.5">{error}</p>
       )}
@@ -586,6 +604,7 @@ function Summary({ booking }: { booking: Booking }) {
         <SumRow label="Abholzeit" value={booking.time} />
         <SumRow label="Name" value={`${booking.firstName} ${booking.lastName}`} />
         <SumRow label="Telefon" value={booking.phone} />
+        {booking.email && <SumRow label="E-Mail" value={booking.email} />}
       </div>
       <p className="text-sm text-navy-800/70">
         Mit dem Absenden bestätigen Sie, dass die Angaben korrekt sind. Wir

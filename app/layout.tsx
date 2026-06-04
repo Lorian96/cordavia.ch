@@ -13,20 +13,22 @@ const SITE_URL = "https://cordavia.ch";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cordavia – Krankenfahrten & medizinischer Transport in der Schweiz",
+    default: "Cordavia – Taxi & Krankenfahrten in der Schweiz",
     template: "%s · Cordavia",
   },
   description:
-    "Cordavia – medizinischer Transportdienst in den Kantonen Zürich, Schwyz, St.Gallen und Glarus. Krankenfahrten, Liegend- und Rollstuhltransporte mit Krankenkassen-Abrechnung. 24h erreichbar.",
+    "Cordavia – Ihr Taxi und Krankentransport in den Kantonen Zürich, Schwyz, St.Gallen und Glarus. Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte. 24h erreichbar, pünktlich, mit Krankenkassen-Abrechnung.",
   keywords: [
+    "Taxi Schweiz",
+    "Taxi Zürich",
+    "Taxi St.Gallen",
     "Krankenfahrt Schweiz",
-    "Krankentransport Zürich",
-    "Krankentransport St.Gallen",
+    "Krankentransport",
     "Liegendtransport",
     "Rollstuhltransport",
     "Dialysefahrt",
     "Reha-Fahrt",
-    "Patientenfahrt",
+    "Flughafentransfer",
     "Cordavia",
     "Krankenkassen-Abrechnung",
     "Kanton Schwyz",
@@ -40,21 +42,21 @@ export const metadata: Metadata = {
     locale: "de_CH",
     url: SITE_URL,
     siteName: "Cordavia",
-    title: "Cordavia – Krankenfahrten & medizinischer Transport",
+    title: "Cordavia – Taxi & Krankenfahrten in der Schweiz",
     description:
-      "Medizinischer Transportdienst in Zürich, Schwyz, St.Gallen und Glarus. Mit Herz, Erfahrung und Krankenkassen-Abrechnung.",
+      "Ihr Transportpartner in Zürich, Schwyz, St.Gallen und Glarus. Taxi, Krankenfahrten, Rollstuhl- und Liegendtransporte. 24h erreichbar.",
   },
   robots: { index: true, follow: true },
 };
 
 const localBusinessJsonLd = {
   "@context": "https://schema.org",
-  "@type": "MedicalBusiness",
+  "@type": ["TaxiService", "MedicalBusiness", "LocalBusiness"],
   "@id": `${SITE_URL}/#organization`,
   name: "Cordavia",
-  alternateName: "Cordavia Krankentransport",
+  alternateName: "Cordavia Taxi & Krankenfahrten",
   description:
-    "Medizinischer Transportdienst in der Schweiz – Krankenfahrten, Liegend- und Rollstuhltransporte mit Krankenkassen-Abrechnung.",
+    "Taxi- und Krankentransport in der Schweiz – Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte mit Krankenkassen-Abrechnung.",
   url: SITE_URL,
   telephone: PHONE_DISPLAY,
   email: EMAIL,

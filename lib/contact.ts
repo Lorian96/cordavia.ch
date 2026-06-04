@@ -3,9 +3,9 @@
  * Telefonnummer aktuell PLATZHALTER — ersetzen sobald echte Nummer da ist.
  */
 
-export const PHONE_DISPLAY = "+41 44 000 00 00"; // TODO: echte Nummer
-export const PHONE_TEL = "+41440000000"; // TODO: echte Nummer
-export const PHONE_WHATSAPP = "41440000000"; // TODO: echte Nummer (ohne + und Leerzeichen)
+export const PHONE_DISPLAY = "+41 76 606 41 15";
+export const PHONE_TEL = "+41766064115";
+export const PHONE_WHATSAPP = "41766064115";
 
 export const EMAIL = "info@cordavia.ch";
 
