@@ -3,13 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Address autocomplete via OpenStreetMap Nominatim.
- * - Frei, kein API-Key
- * - Limit: 1 Request pro Sekunde (laut Usage Policy)
- * - countrycodes=ch beschränkt auf Schweiz
- *
- * Bei stark steigendem Traffic später durch Google Places oder
- * Swiss-Post API ersetzen.
+ * Address autocomplete via eigener API-Route /api/places.
+ * Die Route proxied an OpenStreetMap Nominatim (gratis, kein API-Key,
+ * Schweiz-only) und cacht Ergebnisse 1h.
  */
 
 type NominatimResult = {
@@ -100,16 +96,14 @@ export function AddressAutocomplete({
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       try {
-        const url =
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(v)}` +
-          `&format=json&countrycodes=ch&limit=6&addressdetails=1&accept-language=de`;
+        const url = `/api/places?q=${encodeURIComponent(v)}`;
         const res = await fetch(url, {
           signal: ctrl.signal,
           headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error("API error");
-        const data = (await res.json()) as NominatimResult[];
-        setResults(data);
+        const data = (await res.json()) as { results: NominatimResult[] };
+        setResults(data.results ?? []);
         setOpen(true);
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
@@ -117,7 +111,7 @@ export function AddressAutocomplete({
       } finally {
         setLoading(false);
       }
-    }, 350);
+    }, 300);
   }
 
   function select(r: NominatimResult) {
