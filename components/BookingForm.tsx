@@ -1,10 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Calendar,
   Check,
   HeartPulse,
   Phone,
@@ -13,6 +12,7 @@ import {
   Wheelchair,
 } from "./icons";
 import { AddressAutocomplete } from "./AddressAutocomplete";
+import { DatePicker } from "./DatePicker";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
 type TransportType = "krankenfahrt" | "liegend" | "rollstuhl" | "taxi" | null;
@@ -56,11 +56,22 @@ const STEPS = [
   "Bestätigung",
 ] as const;
 
-const TIME_SLOTS = [
-  "06:00", "07:00", "08:00", "09:00", "10:00",
-  "11:00", "12:00", "13:00", "14:00", "15:00",
-  "16:00", "17:00", "18:00", "19:00", "20:00",
-];
+function generateAllTimeSlots(): string[] {
+  const out: string[] = [];
+  for (let h = 6; h <= 22; h++) {
+    for (let m = 0; m < 60; m += 10) {
+      if (h === 22 && m > 0) break;
+      out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+    }
+  }
+  return out;
+}
+
+const ALL_TIME_SLOTS = generateAllTimeSlots();
+
+function todayInZurich(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Zurich" });
+}
 
 function isValidSwissPhone(s: string): boolean {
   // Akzeptiert: +41XXXXXXXXX, 0041XXXXXXXXX, 0XXXXXXXXX (Schweizer Nummern)
@@ -72,6 +83,13 @@ function isValidEmail(s: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
 }
 
+type Availability = {
+  blockedByDate: Record<string, string[]>;
+  fullDays: Set<string>;
+  loaded: boolean;
+  error: string | null;
+};
+
 export function BookingForm() {
   const [step, setStep] = useState(0);
   const [booking, setBooking] = useState<Booking>(emptyBooking);
@@ -82,8 +100,51 @@ export function BookingForm() {
     | null
   >(null);
   const [showErrors, setShowErrors] = useState(false);
+  const [availability, setAvailability] = useState<Availability>({
+    blockedByDate: {},
+    fullDays: new Set(),
+    loaded: false,
+    error: null,
+  });
 
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const today = useMemo(() => todayInZurich(), []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const res = await fetch("/api/availability", { cache: "no-store" });
+        if (!res.ok) throw new Error("api");
+        const data = (await res.json()) as {
+          blockedByDate?: Record<string, string[]>;
+          fullDays?: string[];
+          error?: string;
+        };
+        if (cancelled) return;
+        setAvailability({
+          blockedByDate: data.blockedByDate ?? {},
+          fullDays: new Set(data.fullDays ?? []),
+          loaded: true,
+          error: data.error
+            ? "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an."
+            : null,
+        });
+      } catch {
+        if (cancelled) return;
+        setAvailability({
+          blockedByDate: {},
+          fullDays: new Set(),
+          loaded: true,
+          error:
+            "Verfügbarkeit kann momentan nicht geladen werden – bitte rufen Sie uns an.",
+        });
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const canContinue = useMemo(() => {
     switch (step) {
@@ -201,6 +262,7 @@ export function BookingForm() {
             update={update}
             minDate={today}
             showErrors={showErrors}
+            availability={availability}
           />
         )}
         {step === 3 && (
@@ -393,82 +455,156 @@ function DateTimeStep({
   update,
   minDate,
   showErrors,
+  availability,
 }: {
   booking: Booking;
   update: <K extends keyof Booking>(key: K, value: Booking[K]) => void;
   minDate: string;
   showErrors: boolean;
+  availability: Availability;
 }) {
   const dateErr =
     showErrors && (booking.date === "" || booking.date < minDate);
   const timeErr = showErrors && booking.time === "";
+
+  // Slots für das gewählte Datum berechnen
+  const todayStr = minDate;
+  const nowMinutes = useMemo(() => {
+    const d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }, []);
+
+  const availableSlots = useMemo(() => {
+    if (!booking.date) return [];
+    const blocked = new Set(availability.blockedByDate[booking.date] ?? []);
+    return ALL_TIME_SLOTS.filter((slot) => {
+      if (blocked.has(slot)) return false;
+      if (booking.date === todayStr) {
+        const [h, m] = slot.split(":").map(Number);
+        if (h * 60 + m <= nowMinutes) return false;
+      }
+      return true;
+    });
+  }, [booking.date, availability.blockedByDate, todayStr, nowMinutes]);
+
+  // Bei Änderung von Datum / Verfügbarkeit: ungültige Zeit zurücksetzen
+  useEffect(() => {
+    if (booking.time && !availableSlots.includes(booking.time)) {
+      update("time", "");
+    }
+  }, [availableSlots, booking.time, update]);
+
   return (
     <>
       <StepHeader
         title="Wann möchten Sie fahren?"
-        subtitle="Datum und gewünschte Abholzeit."
+        subtitle="Datum und Abholzeit wählen — bereits belegte Zeiten sind ausgeblendet."
       />
-      <div className="space-y-6 max-w-xl">
-        <label className="block">
+
+      {availability.error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-900 text-sm mb-6">
+          <p className="font-semibold mb-1">⚠ Verfügbarkeit nicht ladbar</p>
+          <p>
+            {availability.error}{" "}
+            <a
+              href={`tel:${PHONE_TEL}`}
+              className="font-bold underline whitespace-nowrap"
+            >
+              {PHONE_DISPLAY}
+            </a>
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        <div>
           <span className="block text-base font-semibold text-navy-900 mb-2">
             Datum
           </span>
-          <div className="relative">
-            <Calendar className="h-6 w-6 text-navy-900 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="date"
-              min={minDate}
-              value={booking.date}
-              onChange={(e) => update("date", e.target.value)}
-              className={`w-full text-xl rounded-2xl border-2 pl-12 pr-5 py-4 outline-none transition ${
-                dateErr ? "border-red-400 bg-red-50" : "border-navy-50 focus:border-teal-500"
-              }`}
-            />
-          </div>
+          <DatePicker
+            value={booking.date || null}
+            onSelect={(d) => update("date", d)}
+            minDate={minDate}
+            disabledDates={availability.fullDays}
+          />
           {dateErr && (
             <p className="text-sm text-red-700 mt-2">
-              Bitte ein Datum ab heute wählen.
-            </p>
-          )}
-        </label>
-
-        <div>
-          <span className="block text-base font-semibold text-navy-900 mb-2">
-            Gewünschte Abholzeit
-          </span>
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-            {TIME_SLOTS.map((t) => {
-              const active = booking.time === t;
-              return (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => update("time", t)}
-                  className={`py-3 rounded-xl text-lg font-bold border-2 transition ${
-                    active
-                      ? "bg-teal-500 border-teal-500 text-navy-950"
-                      : "bg-white border-navy-50 text-navy-900 hover:border-teal-400"
-                  }`}
-                  aria-pressed={active}
-                >
-                  {t}
-                </button>
-              );
-            })}
-          </div>
-          {timeErr && (
-            <p className="text-sm text-red-700 mt-2">
-              Bitte eine Uhrzeit wählen.
+              Bitte ein Datum wählen.
             </p>
           )}
         </div>
+
+        {booking.date && (
+          <div>
+            <span className="block text-base font-semibold text-navy-900 mb-2">
+              Verfügbare Abholzeit am {formatDate(booking.date)}
+            </span>
+
+            {!availability.loaded && (
+              <div className="text-navy-800/65 text-sm flex items-center gap-2 py-3">
+                <span className="inline-block h-3 w-3 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+                Verfügbarkeit wird geladen…
+              </div>
+            )}
+
+            {availability.loaded && availableSlots.length === 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-900 text-sm">
+                <p className="font-semibold mb-1">
+                  Für diesen Tag sind keine Zeiten mehr verfügbar.
+                </p>
+                <p>
+                  Bitte wählen Sie einen anderen Tag oder rufen Sie uns an –{" "}
+                  <a
+                    href={`tel:${PHONE_TEL}`}
+                    className="font-bold underline whitespace-nowrap"
+                  >
+                    {PHONE_DISPLAY}
+                  </a>
+                </p>
+              </div>
+            )}
+
+            {availability.loaded && availableSlots.length > 0 && (
+              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
+                {availableSlots.map((t) => {
+                  const active = booking.time === t;
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => update("time", t)}
+                      className={`py-2.5 rounded-lg text-sm sm:text-base font-bold border-2 transition min-h-[44px] ${
+                        active
+                          ? "bg-teal-500 border-teal-500 text-navy-950"
+                          : "bg-white border-navy-50 text-navy-900 hover:border-teal-400"
+                      }`}
+                      aria-pressed={active}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {timeErr && (
+              <p className="text-sm text-red-700 mt-2">
+                Bitte eine Uhrzeit wählen.
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 text-navy-900 text-sm">
           <p className="font-semibold mb-1">Hinweis</p>
           <p>
             Wir bestätigen die genaue Abholzeit nach Eingang Ihrer Buchung
-            telefonisch. Andere Zeit nötig? Rufen Sie uns an –{" "}
-            <a href={`tel:${PHONE_TEL}`} className="text-teal-700 font-semibold underline">
+            schriftlich. Pro Fahrt wird ein Puffer von 40 Minuten berücksichtigt.
+            Andere Zeit nötig? Rufen Sie uns an –{" "}
+            <a
+              href={`tel:${PHONE_TEL}`}
+              className="text-teal-700 font-semibold underline whitespace-nowrap"
+            >
               {PHONE_DISPLAY}
             </a>
           </p>
