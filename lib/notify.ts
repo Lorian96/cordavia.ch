@@ -1,4 +1,5 @@
 import type { BookingRow } from "@/lib/supabase";
+import { PHONE_DISPLAY, PHONE_TEL, EMAIL } from "@/lib/contact";
 
 const TRANSPORT_LABEL: Record<BookingRow["transport_type"], string> = {
   krankenfahrt: "Krankenfahrt",
@@ -15,6 +16,30 @@ function fmtDate(iso: string) {
 
 function esc(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+async function sendResend(payload: {
+  from: string;
+  to: string[];
+  subject: string;
+  html: string;
+  text: string;
+  reply_to?: string;
+}): Promise<{ ok: true } | { ok: false; status: number; body: string }> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { ok: false, status: 0, body: "no api key" };
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    return { ok: false, status: res.status, body: await res.text() };
+  }
+  return { ok: true };
 }
 
 export async function notifyAdminOfBooking(row: BookingRow) {
@@ -116,4 +141,123 @@ export async function notifyAdminOfBooking(row: BookingRow) {
   } catch (err) {
     console.error("[notify] resend send threw", err);
   }
+}
+
+/**
+ * Bestätigungsmail an den Kunden (wenn er eine Email angegeben hat).
+ *
+ * WICHTIG: Resend Free-Tier mit `onboarding@resend.dev` darf nur an die
+ * Resend-Account-Owner-Email senden. Für Versand an beliebige Kundenadressen
+ * muss `cordavia.ch` bei Resend verifiziert sein (DNS-Records bei Hostpoint).
+ * Dann `RESEND_CUSTOMER_FROM=bestaetigung@cordavia.ch` in Vercel env setzen.
+ *
+ * Bis dahin: skipped (siehe Check unten).
+ */
+export async function notifyCustomerOfBooking(row: BookingRow) {
+  if (!row.email || row.email.length === 0) {
+    return; // Kunde hat keine Email angegeben
+  }
+
+  const from = process.env.RESEND_CUSTOMER_FROM || "";
+  if (!from) {
+    console.log(
+      "[notify-customer] RESEND_CUSTOMER_FROM not set — domain bei Resend noch nicht verifiziert, skipping",
+      { bookingNumber: row.booking_number, customerEmail: row.email }
+    );
+    return;
+  }
+
+  const subject = `Ihre Buchung ${row.booking_number} bei Cordavia`;
+
+  const html = `<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>${esc(subject)}</title></head>
+<body style="margin:0;padding:0;background:#f6f6f4;font-family:Arial,Helvetica,sans-serif;color:#0B2545;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f6f6f4;padding:24px 0;">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(11,37,69,0.08);">
+        <tr><td style="background:#0B2545;color:#fff;padding:24px 28px;">
+          <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.7;">Cordavia</div>
+          <div style="font-size:24px;font-weight:700;margin-top:4px;">Vielen Dank für Ihre Buchung!</div>
+        </td></tr>
+        <tr><td style="padding:28px;">
+          <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;">
+            Guten Tag <b>${esc(row.first_name)} ${esc(row.last_name)}</b>,
+          </p>
+          <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;">
+            wir haben Ihre Anfrage erhalten. Wir melden uns telefonisch unter
+            <a href="tel:${esc(row.phone)}" style="color:#0B2545;font-weight:600;">${esc(row.phone)}</a>
+            zur Bestätigung der genauen Abholzeit – in der Regel innerhalb der
+            nächsten 15 Minuten an Werktagen.
+          </p>
+          <div style="background:#f5f9fc;border-radius:12px;padding:18px 20px;margin:20px 0;">
+            <div style="font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Buchungsnummer</div>
+            <div style="font-size:22px;font-weight:700;font-family:'Courier New',monospace;letter-spacing:2px;">${esc(row.booking_number)}</div>
+          </div>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;">
+            <tr><td style="padding:8px 0;border-bottom:1px solid #eee;width:160px;color:#64748b;">Transport-Art</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;">${esc(TRANSPORT_LABEL[row.transport_type])}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Datum</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(fmtDate(row.ride_date))}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;">Gewünschte Abholzeit</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:600;">${esc(row.ride_time)}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#64748b;vertical-align:top;">Abholort</td><td style="padding:8px 0;border-bottom:1px solid #eee;">${esc(row.pickup)}</td></tr>
+            <tr><td style="padding:8px 0;color:#64748b;vertical-align:top;">Zielort</td><td style="padding:8px 0;">${esc(row.destination)}</td></tr>
+          </table>
+          <p style="margin:24px 0 8px 0;font-size:15px;line-height:1.6;">
+            <b>Möchten Sie etwas ändern?</b> Rufen Sie uns einfach an –
+            <a href="tel:${esc(PHONE_TEL)}" style="color:#0B2545;font-weight:600;">${esc(PHONE_DISPLAY)}</a>
+            – wir sind 24 Stunden für Sie da.
+          </p>
+          <p style="margin:8px 0 0 0;font-size:14px;color:#64748b;line-height:1.6;">
+            Herzliche Grüsse<br>
+            Ihr Cordavia-Team
+          </p>
+        </td></tr>
+        <tr><td style="background:#f1f5f9;padding:16px 28px;color:#64748b;font-size:12px;text-align:center;line-height:1.6;">
+          Cordavia · Wir kümmern uns. Auf jedem Weg.<br>
+          <a href="https://cordavia.ch" style="color:#0B2545;">cordavia.ch</a> ·
+          <a href="mailto:${esc(EMAIL)}" style="color:#0B2545;">${esc(EMAIL)}</a> ·
+          <a href="tel:${esc(PHONE_TEL)}" style="color:#0B2545;">${esc(PHONE_DISPLAY)}</a>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+
+  const text = [
+    `Vielen Dank für Ihre Buchung, ${row.first_name} ${row.last_name}!`,
+    "",
+    `Buchungsnummer: ${row.booking_number}`,
+    "",
+    `Transport: ${TRANSPORT_LABEL[row.transport_type]}`,
+    `Datum: ${fmtDate(row.ride_date)}`,
+    `Gewünschte Abholzeit: ${row.ride_time}`,
+    `Abholort: ${row.pickup}`,
+    `Zielort: ${row.destination}`,
+    "",
+    "Wir melden uns telefonisch zur Bestätigung der Abholzeit.",
+    "",
+    `Bei Fragen: ${PHONE_DISPLAY} oder ${EMAIL}`,
+    "",
+    "Herzliche Grüsse,",
+    "Ihr Cordavia-Team",
+    "cordavia.ch",
+  ].join("\n");
+
+  const res = await sendResend({
+    from,
+    to: [row.email],
+    subject,
+    html,
+    text,
+    reply_to: EMAIL,
+  });
+
+  if (!res.ok) {
+    console.error("[notify-customer] send failed", res.status, res.body, {
+      bookingNumber: row.booking_number,
+    });
+    return;
+  }
+  console.log("[notify-customer] email sent to customer", {
+    bookingNumber: row.booking_number,
+    to: row.email,
+  });
 }
