@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { setStatus } from "./actions";
+import { setStatus, deleteBooking } from "./actions";
 import type { Booking } from "@/lib/supabaseServer";
 
 const LABELS: Record<Booking["status"], string> = {
@@ -18,12 +18,12 @@ const CLASSES: Record<Booking["status"], string> = {
   cancelled: "bg-rose-100 text-rose-900 border-rose-300",
 };
 
-export function StatusButtons({ id, current }: { id: string; current: Booking["status"] }) {
+export function StatusButtons({ id, current, bookingNumber }: { id: string; current: Booking["status"]; bookingNumber: string }) {
   const [pending, start] = useTransition();
   const states: Booking["status"][] = ["pending", "confirmed", "completed", "cancelled"];
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {states.map((s) => {
         const active = s === current;
         return (
@@ -38,6 +38,19 @@ export function StatusButtons({ id, current }: { id: string; current: Booking["s
           </button>
         );
       })}
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => {
+          if (confirm(`Buchung ${bookingNumber} endgültig löschen?`)) {
+            start(async () => { await deleteBooking(id); });
+          }
+        }}
+        className="text-xs font-semibold px-3 py-1.5 rounded-full border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 transition disabled:opacity-60 ml-auto"
+        title="Buchung löschen"
+      >
+        Löschen
+      </button>
     </div>
   );
 }
