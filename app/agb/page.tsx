@@ -60,13 +60,9 @@ export default function AgbPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">4. Preise und Zahlung</h2>
               <p>
-                Bei Krankenfahrten erfolgt die Abrechnung – sofern medizinisch indiziert und genehmigt –
-                direkt mit der Krankenkasse. Eigenanteile, Selbstbehalte oder nicht von der Kasse
-                übernommene Strecken werden dem Auftraggeber in Rechnung gestellt.
-              </p>
-              <p>
-                Privatfahrten (Taxi-Service) werden nach festgelegtem Tarif berechnet. Zahlung erfolgt
-                bar, mit Karte oder per Rechnung.
+                Alle Fahrten werden nach den auf vitaway.ch/preise veröffentlichten Tarifen
+                berechnet. Die Rechnungsstellung erfolgt direkt an den Auftraggeber. Zahlung
+                ist bar, mit Karte oder auf Rechnung möglich.
               </p>
             </section>
 

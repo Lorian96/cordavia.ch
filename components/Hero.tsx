@@ -1,5 +1,6 @@
 import { Phone, WhatsApp, Calendar, Shield, HeartPulse, Check } from "./icons";
 import { PHONE_DISPLAY, PHONE_TEL, PHONE_WHATSAPP, SERVICE_REGION_LABEL } from "@/lib/contact";
+import { CallbackButton } from "./CallbackButton";
 
 export function Hero() {
   return (
@@ -48,30 +49,40 @@ export function Hero() {
             </li>
           </ul>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href="#buchung"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-7 py-4 text-lg sm:text-xl shadow-lg transition"
-            >
-              <Calendar className="h-6 w-6" />
-              Fahrt buchen
-            </a>
+          <p className="text-base text-teal-300 font-semibold mb-3">
+            So erreichen Sie uns — wählen Sie was Ihnen am liebsten ist:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <a
               href={`tel:${PHONE_TEL}`}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-white hover:bg-navy-50 text-navy-900 font-bold px-7 py-4 text-lg sm:text-xl shadow-lg transition"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-navy-50 text-navy-900 font-bold px-6 py-5 text-lg sm:text-xl shadow-xl ring-2 ring-teal-300 transition"
             >
-              <Phone className="h-6 w-6" />
-              {PHONE_DISPLAY}
+              <Phone className="h-7 w-7" />
+              <span>Anrufen</span>
+            </a>
+            <a
+              href="#buchung"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-6 py-5 text-lg sm:text-xl shadow-xl transition"
+            >
+              <Calendar className="h-7 w-7" />
+              <span>Online buchen</span>
             </a>
             <a
               href={`https://wa.me/${PHONE_WHATSAPP}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold px-7 py-4 text-lg sm:text-xl shadow-lg transition"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5d] text-white font-bold px-6 py-5 text-lg sm:text-xl shadow-xl transition"
             >
-              <WhatsApp className="h-6 w-6" />
-              WhatsApp
+              <WhatsApp className="h-7 w-7" />
+              <span>WhatsApp</span>
             </a>
+          </div>
+          <p className="text-base text-navy-50/80 mt-3 font-semibold">
+            <Phone className="inline h-5 w-5 mr-1 mb-1" />
+            {PHONE_DISPLAY} — Tag &amp; Nacht
+          </p>
+          <div className="mt-4">
+            <CallbackButton />
           </div>
         </div>
 
@@ -92,7 +103,7 @@ export function Hero() {
               </div>
               <div className="space-y-4 text-lg">
                 <Row label="Taxi-Service" value="Stadt & Region" />
-                <Row label="Krankenfahrten" value="Mit Kassen-Abrechnung" />
+                <Row label="Krankenfahrten" value="Mit Begleitung" />
                 <Row label="Liegendtransporte" value="Fachpersonal" />
                 <Row label="Rollstuhltransporte" value="Hublift · Sicher" />
               </div>

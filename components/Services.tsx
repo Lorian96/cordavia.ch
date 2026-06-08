@@ -25,12 +25,12 @@ const services: Service[] = [
     icon: <HeartPulse className="h-8 w-8" />,
     title: "Krankenfahrten",
     description:
-      "Begleitete Fahrten zu Arzt, Klinik, Dialyse oder Reha – mit Krankenkassen-Abrechnung.",
+      "Begleitete Fahrten zu Arzt, Klinik, Dialyse oder Reha – mit Hilfe beim Ein- und Aussteigen.",
     items: [
       "Arzt- und Klinikfahrten",
       "Dialyse- und Reha-Fahrten",
       "Therapie- und Tagesklinik",
-      "Krankenkassen-Abrechnung",
+      "Persönliche Begleitung",
     ],
   },
   {

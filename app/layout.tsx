@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s · VitaWay",
   },
   description:
-    "VitaWay – Ihr Taxi und Krankentransport in den Kantonen Zürich, Schwyz, St.Gallen und Glarus. Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte. 24h erreichbar, pünktlich, mit Krankenkassen-Abrechnung.",
+    "VitaWay – Ihr Taxi und Krankentransport in den Kantonen Zürich, Schwyz, St.Gallen und Glarus. Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte. 24h erreichbar, pünktlich, mit Herz.",
   keywords: [
     "Taxi Schweiz",
     "Taxi Zürich",
@@ -30,7 +30,6 @@ export const metadata: Metadata = {
     "Reha-Fahrt",
     "Flughafentransfer",
     "VitaWay",
-    "Krankenkassen-Abrechnung",
     "Kanton Schwyz",
     "Kanton Glarus",
   ],
@@ -56,7 +55,7 @@ const localBusinessJsonLd = {
   name: "VitaWay",
   alternateName: "VitaWay Taxi & Krankenfahrten",
   description:
-    "Taxi- und Krankentransport in der Schweiz – Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte mit Krankenkassen-Abrechnung.",
+    "Taxi- und Krankentransport in der Schweiz – Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte. Pünktlich, sicher, mit Herz.",
   url: SITE_URL,
   telephone: PHONE_DISPLAY,
   email: EMAIL,

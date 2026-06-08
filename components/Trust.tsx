@@ -27,7 +27,7 @@ const pillars: Pillar[] = [
 
 const credentials = [
   "Faire, transparente Preise",
-  "Krankenkassen-Abrechnung",
+  "Persönliche Begleitung",
   "Geschultes Personal",
   "Hublift & barrierefreie Fahrzeuge",
   "Zertifizierte Rückhaltesysteme",

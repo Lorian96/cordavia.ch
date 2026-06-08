@@ -28,14 +28,14 @@ export const PRICES: PriceItem[] = [
     id: "krankenfahrt",
     label: "Krankenfahrt",
     description:
-      "Begleitete Fahrten zu Arzt, Klinik, Dialyse, Therapie oder Reha — mit Krankenkassen-Abrechnung.",
+      "Begleitete Fahrten zu Arzt, Klinik, Dialyse, Therapie oder Reha — mit Hilfe und Sorgfalt.",
     baseFee: 8,
     perKm: 4.4,
     waitingPerHour: 60,
     inclusive: [
       "Hilfe beim Ein- und Aussteigen",
       "Begleitung bis zur Praxis-/Klinik-Tür",
-      "Krankenkassen-Abrechnung wenn ärztlich verordnet",
+      "Auch für Senioren und Menschen mit Einschränkungen",
     ],
     highlight: true,
   },

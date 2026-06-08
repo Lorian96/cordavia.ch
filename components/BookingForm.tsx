@@ -49,10 +49,8 @@ const TRANSPORT_LABELS: Record<Exclude<TransportType, null>, string> = {
 };
 
 const STEPS = [
-  "Transportart",
-  "Route",
-  "Datum & Zeit",
-  "Kontakt",
+  "Fahrt & Adresse",
+  "Termin & Kontakt",
   "Bestätigung",
 ] as const;
 
@@ -174,9 +172,9 @@ export function BookingForm() {
     loadAvailability();
   }, [loadAvailability]);
 
-  // Reload bei Eintritt in Schritt 3 (Datum & Zeit), damit immer aktuell
+  // Reload bei Eintritt in Schritt 2 (Termin & Kontakt), damit immer aktuell
   useEffect(() => {
-    if (step === 2) loadAvailability();
+    if (step === 1) loadAvailability();
   }, [step, loadAvailability]);
 
   const nowMinutes = useMemo(() => {
@@ -187,10 +185,12 @@ export function BookingForm() {
   const canContinue = useMemo(() => {
     switch (step) {
       case 0:
-        return booking.transportType !== null;
-      case 1:
-        return booking.pickup.trim().length > 3 && booking.destination.trim().length > 3;
-      case 2: {
+        return (
+          booking.transportType !== null &&
+          booking.pickup.trim().length > 3 &&
+          booking.destination.trim().length > 3
+        );
+      case 1: {
         if (!booking.date || booking.date < today || !booking.time) return false;
         const t = timeToMin(booking.time);
         const sStart = timeToMin(availability.serviceWindow.start);
@@ -201,16 +201,14 @@ export function BookingForm() {
         for (const tA of existing) {
           if (Math.abs(t - tA) < availability.bufferMinutes) return false;
         }
-        return true;
-      }
-      case 3:
         return (
           booking.firstName.trim().length > 1 &&
           booking.lastName.trim().length > 1 &&
           isValidEmail(booking.email) &&
           (booking.phone.trim() === "" || isValidSwissPhone(booking.phone))
         );
-      case 4:
+      }
+      case 2:
         return true;
       default:
         return true;
@@ -246,10 +244,10 @@ export function BookingForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        // Bei Zeitkonflikt (409): zurück zu Schritt 3 + Verfügbarkeit neu laden
+        // Bei Zeitkonflikt (409): zurück zu Schritt „Termin & Kontakt" + Verfügbarkeit neu laden
         if (res.status === 409) {
           await loadAvailability();
-          setStep(2);
+          setStep(1);
           setShowErrors(true);
         }
         throw new Error(data.error ?? "Unbekannter Fehler");
@@ -288,7 +286,7 @@ export function BookingForm() {
             Schritt {step + 1} von {STEPS.length}: {STEPS[step]}
           </span>
           <span className="text-teal-300 font-semibold hidden sm:inline">
-            5 Schritte zur Fahrt
+            Nur 3 Schritte
           </span>
         </div>
         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -306,27 +304,29 @@ export function BookingForm() {
       {/* Step body */}
       <div className="p-6 sm:p-10 min-h-[420px]">
         {step === 0 && (
-          <TransportStep
-            value={booking.transportType}
-            onChange={(v) => update("transportType", v)}
-          />
+          <>
+            <TransportStep
+              value={booking.transportType}
+              onChange={(v) => update("transportType", v)}
+            />
+            <div className="my-10 border-t border-navy-50" />
+            <RouteStep booking={booking} update={update} showErrors={showErrors} />
+          </>
         )}
         {step === 1 && (
-          <RouteStep booking={booking} update={update} showErrors={showErrors} />
+          <>
+            <DateTimeStep
+              booking={booking}
+              update={update}
+              minDate={today}
+              showErrors={showErrors}
+              availability={availability}
+            />
+            <div className="my-10 border-t border-navy-50" />
+            <ContactStep booking={booking} update={update} showErrors={showErrors} />
+          </>
         )}
-        {step === 2 && (
-          <DateTimeStep
-            booking={booking}
-            update={update}
-            minDate={today}
-            showErrors={showErrors}
-            availability={availability}
-          />
-        )}
-        {step === 3 && (
-          <ContactStep booking={booking} update={update} showErrors={showErrors} />
-        )}
-        {step === 4 && <Summary booking={booking} />}
+        {step === 2 && <Summary booking={booking} />}
 
         {result?.status === "error" && (
           <p

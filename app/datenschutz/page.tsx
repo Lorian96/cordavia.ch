@@ -54,7 +54,7 @@ export default function DatenschutzPage() {
               <ul className="list-disc list-inside space-y-1">
                 <li>Durchführung Ihrer gebuchten Fahrt</li>
                 <li>Kommunikation mit Ihnen (Bestätigung, Rückfragen)</li>
-                <li>Abrechnung mit Krankenkassen (sofern zutreffend)</li>
+                <li>Rechnungsstellung</li>
                 <li>Erfüllung gesetzlicher Aufbewahrungspflichten</li>
               </ul>
             </section>
@@ -71,8 +71,8 @@ export default function DatenschutzPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">5. Weitergabe an Dritte</h2>
               <p>
-                Eine Weitergabe an Dritte erfolgt nur, wenn dies zur Vertragserfüllung notwendig ist (z.B.
-                Abrechnung mit der Krankenkasse) oder gesetzlich vorgeschrieben.
+                Eine Weitergabe an Dritte erfolgt nur, wenn dies zur Vertragserfüllung notwendig ist
+                oder gesetzlich vorgeschrieben.
               </p>
               <p>
                 Technische Dienstleister wir nutzen:
