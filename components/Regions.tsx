@@ -55,7 +55,7 @@ export function Regions() {
             Wir fahren in vier Kantonen.
           </h2>
           <p className="text-xl text-navy-800/80 leading-relaxed">
-            Cordavia ist in den Kantonen Zürich, Schwyz, St.Gallen und Glarus
+            VitaWay ist in den Kantonen Zürich, Schwyz, St.Gallen und Glarus
             unterwegs. Innerhalb der Schweiz und auch grenzüberschreitend auf
             Anfrage.
           </p>

@@ -3,8 +3,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "AGB · Cordavia",
-  description: "Allgemeine Geschäftsbedingungen für die Beförderungsleistungen von Cordavia.",
+  title: "AGB · VitaWay",
+  description: "Allgemeine Geschäftsbedingungen für die Beförderungsleistungen von VitaWay.",
   robots: { index: true, follow: true },
 };
 
@@ -27,14 +27,14 @@ export default function AgbPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">1. Geltungsbereich</h2>
               <p>
-                Diese AGB gelten für alle Beförderungsleistungen von <strong>[Firma]</strong> („Cordavia").
+                Diese AGB gelten für alle Beförderungsleistungen von <strong>[Firma]</strong> („VitaWay").
                 Mit der Buchung einer Fahrt erkennt der Auftraggeber diese AGB an.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">2. Leistungsumfang</h2>
-              <p>Cordavia bietet:</p>
+              <p>VitaWay bietet:</p>
               <ul className="list-disc list-inside space-y-1">
                 <li>Krankenfahrten zu Arzt, Klinik, Dialyse, Reha und Therapie</li>
                 <li>Liegendtransporte</li>
@@ -51,8 +51,8 @@ export default function AgbPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">3. Buchung und Vertragsschluss</h2>
               <p>
-                Buchungen sind telefonisch, per WhatsApp oder über das Online-Formular auf cordavia.ch
-                möglich. Eine Buchung wird verbindlich, sobald Cordavia die Bestätigung mündlich oder
+                Buchungen sind telefonisch, per WhatsApp oder über das Online-Formular auf vitaway.ch
+                möglich. Eine Buchung wird verbindlich, sobald VitaWay die Bestätigung mündlich oder
                 schriftlich erteilt hat.
               </p>
             </section>
@@ -91,7 +91,7 @@ export default function AgbPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">7. Haftung</h2>
               <p>
-                Cordavia haftet im Rahmen der gesetzlichen Bestimmungen und der abgeschlossenen
+                VitaWay haftet im Rahmen der gesetzlichen Bestimmungen und der abgeschlossenen
                 Personentransport-Versicherung. Bei Verspätungen oder Ausfällen aufgrund höherer Gewalt
                 (z.B. Unwetter, Strassensperrung) ist eine Haftung ausgeschlossen.
               </p>
@@ -108,7 +108,7 @@ export default function AgbPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">9. Anwendbares Recht und Gerichtsstand</h2>
               <p>
-                Es gilt Schweizer Recht. Gerichtsstand ist der Sitz von Cordavia, sofern gesetzlich
+                Es gilt Schweizer Recht. Gerichtsstand ist der Sitz von VitaWay, sofern gesetzlich
                 zulässig.
               </p>
             </section>

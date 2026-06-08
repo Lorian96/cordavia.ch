@@ -45,7 +45,7 @@ async function sendResend(payload: {
 export async function notifyAdminOfBooking(row: BookingRow) {
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.ADMIN_NOTIFY_EMAIL;
-  const from = process.env.RESEND_FROM_EMAIL || "Cordavia <onboarding@resend.dev>";
+  const from = process.env.RESEND_FROM_EMAIL || "VitaWay <onboarding@resend.dev>";
 
   if (!apiKey || !to) {
     console.log("[notify] RESEND_API_KEY or ADMIN_NOTIFY_EMAIL not set — skipping email");
@@ -67,12 +67,12 @@ export async function notifyAdminOfBooking(row: BookingRow) {
     <tr><td align="center">
       <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(11,37,69,0.08);">
         <tr><td style="background:#0B2545;color:#fff;padding:20px 28px;">
-          <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.7;">Cordavia · Admin-Benachrichtigung</div>
+          <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.7;">VitaWay · Admin-Benachrichtigung</div>
           <div style="font-size:22px;font-weight:700;margin-top:4px;">Neue Buchung eingegangen</div>
         </td></tr>
         <tr><td style="padding:24px 28px;">
           <p style="margin:0 0 16px 0;font-size:15px;line-height:1.5;">
-            Es ist eine neue Buchung über cordavia.ch reingekommen.
+            Es ist eine neue Buchung über vitaway.ch reingekommen.
           </p>
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;">
             <tr><td style="padding:8px 0;border-bottom:1px solid #eee;width:160px;color:#64748b;">Buchungsnummer</td><td style="padding:8px 0;border-bottom:1px solid #eee;font-weight:700;">${esc(row.booking_number)}</td></tr>
@@ -87,11 +87,11 @@ export async function notifyAdminOfBooking(row: BookingRow) {
             ${row.comment ? `<tr><td style="padding:8px 0;color:#64748b;vertical-align:top;">Kommentar</td><td style="padding:8px 0;white-space:pre-wrap;">${esc(row.comment)}</td></tr>` : ""}
           </table>
           <div style="margin-top:24px;text-align:center;">
-            <a href="https://cordavia.ch/admin" style="display:inline-block;background:#14B8A6;color:#0B2545;font-weight:700;padding:12px 24px;border-radius:999px;text-decoration:none;">Im Admin-Dashboard öffnen</a>
+            <a href="https://vitaway.ch/admin" style="display:inline-block;background:#14B8A6;color:#0B2545;font-weight:700;padding:12px 24px;border-radius:999px;text-decoration:none;">Im Admin-Dashboard öffnen</a>
           </div>
         </td></tr>
         <tr><td style="background:#f1f5f9;padding:16px 28px;color:#64748b;font-size:12px;text-align:center;">
-          Cordavia · Wir kümmern uns. Auf jedem Weg. · <a href="https://cordavia.ch" style="color:#0B2545;">cordavia.ch</a>
+          VitaWay · Wir kümmern uns. Auf jedem Weg. · <a href="https://vitaway.ch" style="color:#0B2545;">vitaway.ch</a>
         </td></tr>
       </table>
     </td></tr>
@@ -112,7 +112,7 @@ export async function notifyAdminOfBooking(row: BookingRow) {
     notes.length ? `Hinweise: ${notes.join(", ")}` : "",
     row.comment ? `Kommentar: ${row.comment}` : "",
     "",
-    "Admin: https://cordavia.ch/admin",
+    "Admin: https://vitaway.ch/admin",
   ].filter(Boolean).join("\n");
 
   try {
@@ -148,8 +148,8 @@ export async function notifyAdminOfBooking(row: BookingRow) {
  *
  * WICHTIG: Resend Free-Tier mit `onboarding@resend.dev` darf nur an die
  * Resend-Account-Owner-Email senden. Für Versand an beliebige Kundenadressen
- * muss `cordavia.ch` bei Resend verifiziert sein (DNS-Records bei Hostpoint).
- * Dann `RESEND_CUSTOMER_FROM=bestaetigung@cordavia.ch` in Vercel env setzen.
+ * muss `vitaway.ch` bei Resend verifiziert sein (DNS-Records bei Hostpoint).
+ * Dann `RESEND_CUSTOMER_FROM=bestaetigung@vitaway.ch` in Vercel env setzen.
  *
  * Bis dahin: skipped (siehe Check unten).
  */
@@ -167,7 +167,7 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
     return;
   }
 
-  const subject = `Ihre Fahrt am ${fmtDate(row.ride_date)} ist bestätigt — Cordavia`;
+  const subject = `Ihre Fahrt am ${fmtDate(row.ride_date)} ist bestätigt — VitaWay`;
   const phoneLine = row.phone && row.phone.length > 0
     ? `<p style="margin:0 0 16px 0;font-size:14px;color:#64748b;line-height:1.6;">Wir haben Ihre Telefonnummer <a href="tel:${esc(row.phone)}" style="color:#0B2545;">${esc(row.phone)}</a> für mögliche Rückfragen notiert.</p>`
     : "";
@@ -179,7 +179,7 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
     <tr><td align="center">
       <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(11,37,69,0.08);">
         <tr><td style="background:#0B2545;color:#fff;padding:24px 28px;">
-          <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.7;">Cordavia</div>
+          <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;opacity:0.7;">VitaWay</div>
           <div style="font-size:24px;font-weight:700;margin-top:4px;">Ihre Fahrt ist bestätigt</div>
         </td></tr>
         <tr><td style="padding:28px;">
@@ -210,12 +210,12 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
           </p>
           <p style="margin:8px 0 0 0;font-size:14px;color:#64748b;line-height:1.6;">
             Herzliche Grüsse<br>
-            Ihr Cordavia-Team
+            Ihr VitaWay-Team
           </p>
         </td></tr>
         <tr><td style="background:#f1f5f9;padding:16px 28px;color:#64748b;font-size:12px;text-align:center;line-height:1.6;">
-          Cordavia · Wir kümmern uns. Auf jedem Weg.<br>
-          <a href="https://cordavia.ch" style="color:#0B2545;">cordavia.ch</a> ·
+          VitaWay · Wir kümmern uns. Auf jedem Weg.<br>
+          <a href="https://vitaway.ch" style="color:#0B2545;">vitaway.ch</a> ·
           <a href="mailto:${esc(EMAIL)}" style="color:#0B2545;">${esc(EMAIL)}</a> ·
           <a href="tel:${esc(PHONE_TEL)}" style="color:#0B2545;">${esc(PHONE_DISPLAY)}</a>
         </td></tr>
@@ -240,8 +240,8 @@ export async function notifyCustomerOfBooking(row: BookingRow) {
     `Bei Fragen oder Änderungen: ${PHONE_DISPLAY} oder ${EMAIL}`,
     "",
     "Herzliche Grüsse,",
-    "Ihr Cordavia-Team",
-    "cordavia.ch",
+    "Ihr VitaWay-Team",
+    "vitaway.ch",
   ].filter(Boolean).join("\n");
 
   const res = await sendResend({

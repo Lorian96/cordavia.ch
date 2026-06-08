@@ -12,9 +12,9 @@ export function Footer() {
               aria-hidden
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-teal-500 text-navy-950 font-black"
             >
-              C
+              V
             </span>
-            <span className="text-xl font-bold">Cordavia</span>
+            <span className="text-xl font-bold">VitaWay</span>
           </div>
           <p className="text-navy-50/80 leading-relaxed">
             Ihr Taxi und Krankentransport.
@@ -98,7 +98,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 text-sm text-navy-50/60 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>© {new Date().getFullYear()} Cordavia. Alle Rechte vorbehalten.</span>
+          <span>© {new Date().getFullYear()} VitaWay. Alle Rechte vorbehalten.</span>
           <span>Schweizer Datenschutz · SSL verschlüsselt</span>
         </div>
       </div>

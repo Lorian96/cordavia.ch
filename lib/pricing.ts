@@ -1,5 +1,5 @@
 /**
- * Zentrales Preis-Schema für Cordavia.
+ * Zentrales Preis-Schema für VitaWay.
  * Alle Tarife an EINER Stelle — ändern hier, gilt auf Preisseite + Kalkulator.
  * Stand: Juni 2026
  */

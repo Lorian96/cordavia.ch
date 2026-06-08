@@ -1,15 +1,14 @@
 /**
  * Zentrale Kontakt- und Service-Konstanten.
- * Telefonnummer aktuell PLATZHALTER — ersetzen sobald echte Nummer da ist.
  */
 
 export const PHONE_DISPLAY = "+41 76 606 41 15";
 export const PHONE_TEL = "+41766064115";
 export const PHONE_WHATSAPP = "41766064115";
 
-export const EMAIL = "info@cordavia.ch";
+export const EMAIL = "info@vitaway.ch";
 
-export const COMPANY_NAME = "Cordavia";
+export const COMPANY_NAME = "VitaWay";
 
 export const SERVICE_CANTONS = [
   { code: "ZH", name: "Zürich", slug: "zuerich" },

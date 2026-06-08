@@ -19,9 +19,9 @@ export function Header() {
             aria-hidden
             className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-navy-900 text-white font-black text-lg"
           >
-            C
+            V
           </span>
-          <span className="hidden sm:inline">Cordavia</span>
+          <span className="hidden sm:inline">VitaWay</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-base lg:text-lg font-medium text-navy-800">

@@ -4,8 +4,8 @@ import { Footer } from "@/components/Footer";
 import { EMAIL } from "@/lib/contact";
 
 export const metadata: Metadata = {
-  title: "Datenschutz · Cordavia",
-  description: "Datenschutzerklärung von Cordavia – wie wir Ihre Daten verarbeiten und schützen.",
+  title: "Datenschutz · VitaWay",
+  description: "Datenschutzerklärung von VitaWay – wie wir Ihre Daten verarbeiten und schützen.",
   robots: { index: true, follow: true },
 };
 
@@ -105,7 +105,7 @@ export default function DatenschutzPage() {
             <section>
               <h2 className="text-2xl font-bold text-navy-900 mb-3">7. Cookies und Tracking</h2>
               <p>
-                Cordavia setzt nur technisch notwendige Cookies ein. Es findet kein Tracking durch Dritte
+                VitaWay setzt nur technisch notwendige Cookies ein. Es findet kein Tracking durch Dritte
                 statt. Es werden keine Marketing-Cookies, Werbe-Cookies oder Cookies sozialer Netzwerke
                 verwendet.
               </p>

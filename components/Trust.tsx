@@ -46,7 +46,7 @@ export function Trust() {
             Verlässlich. Menschlich. Professionell.
           </h2>
           <p className="text-xl text-navy-800/80 leading-relaxed">
-            Cordavia ist Ihr Transportpartner für Taxi und Krankenfahrten.
+            VitaWay ist Ihr Transportpartner für Taxi und Krankenfahrten.
             Pünktlich, freundlich und mit Erfahrung – auf jedem Weg.
           </p>
         </div>

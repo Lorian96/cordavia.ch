@@ -30,6 +30,22 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "cordavia.ch" }],
+        destination: "https://vitaway.ch/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.cordavia.ch" }],
+        destination: "https://vitaway.ch/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

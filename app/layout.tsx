@@ -8,16 +8,16 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://cordavia.ch";
+const SITE_URL = "https://vitaway.ch";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cordavia – Taxi & Krankenfahrten in der Schweiz",
-    template: "%s · Cordavia",
+    default: "VitaWay – Taxi & Krankenfahrten in der Schweiz",
+    template: "%s · VitaWay",
   },
   description:
-    "Cordavia – Ihr Taxi und Krankentransport in den Kantonen Zürich, Schwyz, St.Gallen und Glarus. Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte. 24h erreichbar, pünktlich, mit Krankenkassen-Abrechnung.",
+    "VitaWay – Ihr Taxi und Krankentransport in den Kantonen Zürich, Schwyz, St.Gallen und Glarus. Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte. 24h erreichbar, pünktlich, mit Krankenkassen-Abrechnung.",
   keywords: [
     "Taxi Schweiz",
     "Taxi Zürich",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "Dialysefahrt",
     "Reha-Fahrt",
     "Flughafentransfer",
-    "Cordavia",
+    "VitaWay",
     "Krankenkassen-Abrechnung",
     "Kanton Schwyz",
     "Kanton Glarus",
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "de_CH",
     url: SITE_URL,
-    siteName: "Cordavia",
-    title: "Cordavia – Taxi & Krankenfahrten in der Schweiz",
+    siteName: "VitaWay",
+    title: "VitaWay – Taxi & Krankenfahrten in der Schweiz",
     description:
       "Ihr Transportpartner in Zürich, Schwyz, St.Gallen und Glarus. Taxi, Krankenfahrten, Rollstuhl- und Liegendtransporte. 24h erreichbar.",
   },
@@ -53,8 +53,8 @@ const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": ["TaxiService", "MedicalBusiness", "LocalBusiness"],
   "@id": `${SITE_URL}/#organization`,
-  name: "Cordavia",
-  alternateName: "Cordavia Taxi & Krankenfahrten",
+  name: "VitaWay",
+  alternateName: "VitaWay Taxi & Krankenfahrten",
   description:
     "Taxi- und Krankentransport in der Schweiz – Stadtfahrten, Krankenfahrten, Liegend- und Rollstuhltransporte mit Krankenkassen-Abrechnung.",
   url: SITE_URL,

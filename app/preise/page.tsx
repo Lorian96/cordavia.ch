@@ -8,10 +8,10 @@ import { Check, Phone } from "@/components/icons";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
 export const metadata: Metadata = {
-  title: "Preise · Cordavia",
+  title: "Preise · VitaWay",
   description:
     "Transparente Preise für Krankenfahrten, Rollstuhltransporte, Liegendtransporte und Taxi in der Schweiz. Mit Krankenkassen-Abrechnung. Direkt online berechnen.",
-  alternates: { canonical: "https://cordavia.ch/preise" },
+  alternates: { canonical: "https://vitaway.ch/preise" },
 };
 
 export default function PreisePage() {

@@ -8,7 +8,7 @@ import type { NextRequest } from "next/server";
  * Beide gratis, ohne API-Key. Wir cachen serverseitig 1h.
  */
 
-const USER_AGENT = "Cordavia/1.0 (+https://cordavia.ch; info@cordavia.ch)";
+const USER_AGENT = "VitaWay/1.0 (+https://vitaway.ch; info@vitaway.ch)";
 
 // Switzerland bbox: W,S,E,N
 const CH_BBOX = "5.96,45.82,10.49,47.81";

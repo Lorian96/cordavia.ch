@@ -4,8 +4,8 @@ import { Footer } from "@/components/Footer";
 import { PHONE_DISPLAY, EMAIL } from "@/lib/contact";
 
 export const metadata: Metadata = {
-  title: "Impressum · Cordavia",
-  description: "Impressum und rechtliche Angaben zu Cordavia – Medizinischer Transportdienst in der Schweiz.",
+  title: "Impressum · VitaWay",
+  description: "Impressum und rechtliche Angaben zu VitaWay – Medizinischer Transportdienst in der Schweiz.",
   robots: { index: true, follow: true },
 };
 
@@ -44,7 +44,7 @@ export default function ImpressumPage() {
                 <br />
                 E-Mail: <a href={`mailto:${EMAIL}`} className="text-teal-600 hover:underline">{EMAIL}</a>
                 <br />
-                Web: cordavia.ch
+                Web: vitaway.ch
               </p>
             </section>
 
@@ -76,7 +76,7 @@ export default function ImpressumPage() {
               <h2 className="text-2xl font-bold text-navy-900 mb-3">Urheberrechte</h2>
               <p>
                 Die Urheber- und alle anderen Rechte an Inhalten, Bildern, Fotos oder anderen Dateien auf
-                dieser Website gehören ausschliesslich Cordavia oder den speziell genannten Rechteinhabern.
+                dieser Website gehören ausschliesslich VitaWay oder den speziell genannten Rechteinhabern.
                 Für die Reproduktion jeglicher Elemente ist die schriftliche Zustimmung erforderlich.
               </p>
             </section>

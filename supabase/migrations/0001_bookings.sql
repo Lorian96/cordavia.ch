@@ -1,4 +1,4 @@
--- Cordavia bookings schema
+-- VitaWay bookings schema
 -- Run this in Supabase Dashboard -> SQL Editor
 
 create table if not exists public.bookings (

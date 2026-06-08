@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
  * Verwendet OpenStreetMap Nominatim (gratis, kein API-Key).
  */
 
-const USER_AGENT = "Cordavia/1.0 (+https://cordavia.ch; info@cordavia.ch)";
+const USER_AGENT = "VitaWay/1.0 (+https://vitaway.ch; info@vitaway.ch)";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

@@ -15,7 +15,7 @@ export function middleware(req: NextRequest) {
   if (!auth?.startsWith("Basic ")) {
     return new NextResponse("Authentication required", {
       status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Cordavia Admin"' },
+      headers: { "WWW-Authenticate": 'Basic realm="VitaWay Admin"' },
     });
   }
 
@@ -30,7 +30,7 @@ export function middleware(req: NextRequest) {
   if (pass !== expected) {
     return new NextResponse("Invalid credentials", {
       status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Cordavia Admin"' },
+      headers: { "WWW-Authenticate": 'Basic realm="VitaWay Admin"' },
     });
   }
 

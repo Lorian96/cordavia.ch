@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<title>VitaWay — Gründungs-Unterlagen für den Notar</title>
+<style>
+  @page {
+    size: A4;
+    margin: 22mm 18mm 22mm 18mm;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #0B2545;
+    line-height: 1.55;
+    font-size: 11pt;
+    background: #f5f9fc;
+  }
+  .page {
+    background: #fff;
+    max-width: 800px;
+    margin: 24px auto;
+    padding: 36px 44px;
+    box-shadow: 0 4px 20px rgba(11, 37, 69, 0.08);
+    border-radius: 10px;
+  }
+  .header {
+    border-bottom: 3px solid #14B8A6;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .logo {
+    width: 40px; height: 40px;
+    background: #0B2545;
+    color: #fff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .brand-name {
+    font-size: 22pt;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .doc-title {
+    font-size: 18pt;
+    font-weight: 700;
+    margin: 8px 0 4px;
+  }
+  .doc-subtitle {
+    color: #475569;
+    font-size: 10pt;
+  }
+  h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #0B2545;
+    border-left: 4px solid #14B8A6;
+    padding-left: 10px;
+    margin: 28px 0 12px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0B2545;
+    margin: 18px 0 6px;
+  }
+  p { margin: 6px 0; }
+  ul, ol { padding-left: 22px; margin: 6px 0; }
+  li { margin: 3px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 14px;
+    font-size: 10.5pt;
+  }
+  th, td {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: #0B2545;
+    font-weight: 700;
+    font-size: 10pt;
+  }
+  .checkbox {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #0B2545;
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: -2px;
+    border-radius: 2px;
+  }
+  .zweck-box {
+    background: #f0fdfa;
+    border: 1.5px solid #14B8A6;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    font-size: 10.5pt;
+    line-height: 1.7;
+  }
+  .placeholder {
+    color: #dc2626;
+    font-style: italic;
+    background: #fef2f2;
+    padding: 0 4px;
+    border-radius: 2px;
+  }
+  .note {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 10pt;
+    border-radius: 4px;
+  }
+  .footer {
+    margin-top: 30px;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 9pt;
+    color: #64748b;
+    text-align: center;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .toc {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 10pt;
+  }
+  .toc h3 { margin-top: 0; }
+  .toc ol { padding-left: 22px; }
+  .toc li { margin: 2px 0; }
+  .page-break { page-break-before: always; }
+
+  @media print {
+    body { background: #fff; font-size: 10.5pt; }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      max-width: none;
+    }
+    .no-print { display: none !important; }
+  }
+
+  .print-hint {
+    max-width: 800px;
+    margin: 24px auto;
+    padding: 14px 18px;
+    background: #ecfdf8;
+    border: 1px solid #14B8A6;
+    border-radius: 6px;
+    color: #0B2545;
+    font-size: 10pt;
+  }
+  .print-hint strong { color: #0d9488; }
+</style>
+</head>
+<body>
+
+<div class="print-hint no-print">
+  <strong>📄 So machst du daraus PDF oder Word:</strong><br>
+  <strong>PDF:</strong> Strg+P (oder Cmd+P) → Drucker „Als PDF speichern" oder „Microsoft Print to PDF" → Speichern.<br>
+  <strong>Word:</strong> Öffne die Datei <em>notar-unterlagen.doc</em> im gleichen Ordner — Word importiert sie nativ.
+</div>
+
+<div class="page">
+
+<div class="header">
+  <div class="brand">
+    <span class="logo">V</span>
+    <span class="brand-name">VitaWay</span>
+  </div>
+  <div class="doc-title">Gründungs-Unterlagen für den Notar</div>
+  <div class="doc-subtitle">Vorbereitungs-Dokument · Stand <span id="today"></span></div>
+</div>
+
+<div class="toc">
+  <h3>Inhalt</h3>
+  <ol>
+    <li>Stammdaten der Gesellschaft</li>
+    <li>Gesellschaftszweck</li>
+    <li>Gesellschafter und Stammkapital</li>
+    <li>Geschäftsführung und Vertretung</li>
+    <li>Sitz und Domizil</li>
+    <li>Bekanntmachungen und Geschäftsjahr</li>
+    <li>Checkliste Notar-Termin</li>
+    <li>Schritte nach Handelsregister-Eintragung</li>
+    <li>Geschätzte Gründungskosten</li>
+    <li>Wichtige Hinweise</li>
+  </ol>
+</div>
+
+<h2>1. Stammdaten der Gesellschaft</h2>
+<table>
+  <tr><th style="width: 220px">Feld</th><th>Wert</th></tr>
+  <tr><td>Firmenname</td><td><strong>VitaWay GmbH</strong></td></tr>
+  <tr><td>Rechtsform</td><td>Gesellschaft mit beschränkter Haftung (GmbH)</td></tr>
+  <tr><td>Stammkapital</td><td>CHF 20'000.– (200 Stammanteile à CHF 100.–)</td></tr>
+  <tr><td>Sitz</td><td><span class="placeholder">[Kanton + politische Gemeinde]</span></td></tr>
+  <tr><td>Sprache der Statuten</td><td>Deutsch</td></tr>
+  <tr><td>Geschäftsjahr</td><td>1. Januar bis 31. Dezember</td></tr>
+  <tr><td>Erstes Geschäftsjahr</td><td>von Gründung bis 31. Dezember (verkürzt)</td></tr>
+  <tr><td>Bekanntmachungsorgan</td><td>Schweizerisches Handelsamtsblatt (SHAB)</td></tr>
+</table>
+
+<h2>2. Gesellschaftszweck</h2>
+<p>Vorgeschlagene Zweck-Klausel zur Eintragung im Handelsregister:</p>
+<div class="zweck-box">
+  Betrieb eines Taxiunternehmens sowie die gewerbsmässige Personenbeförderung im Strassenverkehr,
+  einschliesslich Privatfahrten, Flughafentransfer, Rollstuhl- und Patientenfahrten sowie damit verbundener
+  Dienstleistungen wie Begleitservices, Kurier- und Sachentransporte. Die Gesellschaft kann Fahrzeuge mieten,
+  vermieten oder handeln, im In- und Ausland Zweigniederlassungen errichten, sich an anderen Unternehmungen
+  im In- und Ausland beteiligen sowie gleichartige oder verwandte Unternehmungen erwerben oder errichten.
+  Sie kann Grundeigentum und Wertschriften erwerben, verwalten und veräussern. Sie kann alle Geschäfte
+  tätigen, die geeignet sind, den Zweck der Gesellschaft zu fördern oder zu erleichtern.
+</div>
+
+<h2>3. Gesellschafter und Stammkapital</h2>
+<table>
+  <tr>
+    <th>Gesellschafter</th>
+    <th>Wohnadresse</th>
+    <th style="width: 110px">Stammanteile</th>
+    <th style="width: 110px">Wert</th>
+  </tr>
+  <tr>
+    <td>Mustafa Lorian</td>
+    <td><span class="placeholder">[Strasse, PLZ, Ort]</span></td>
+    <td>200 à CHF 100.–</td>
+    <td>CHF 20'000.–</td>
+  </tr>
+  <tr>
+    <td colspan="2"><strong>Total</strong></td>
+    <td><strong>200</strong></td>
+    <td><strong>CHF 20'000.–</strong></td>
+  </tr>
+</table>
+<p>Kapital wird vor Gründung auf ein Schweizer Sperrkonto eingezahlt. Liberierung: 100 % (vollständig einbezahlt).</p>
+
+<h2>4. Geschäftsführung und Vertretung</h2>
+<table>
+  <tr><th style="width: 220px">Feld</th><th>Wert</th></tr>
+  <tr><td>Geschäftsführer</td><td>Mustafa Lorian</td></tr>
+  <tr><td>Vertretungsart</td><td>Einzelzeichnung</td></tr>
+  <tr><td>Wohnsitz</td><td><span class="placeholder">[Strasse, PLZ, Ort]</span></td></tr>
+  <tr><td>Funktion im Handelsregister</td><td>Geschäftsführer mit Einzelunterschrift</td></tr>
+</table>
+
+<h2>5. Sitz und Domizil</h2>
+<table>
+  <tr><th style="width: 220px">Feld</th><th>Wert</th></tr>
+  <tr><td>Geschäftsadresse</td><td><span class="placeholder">[Strasse, PLZ, Ort]</span></td></tr>
+  <tr><td>Verhältnis</td><td><span class="placeholder">[Eigentum / Miete / Domizilhalter]</span></td></tr>
+  <tr><td>Domizilhalter-Erklärung erforderlich</td><td>Ja, falls Adresse nicht im Eigentum oder Mietvertrag mit VitaWay</td></tr>
+</table>
+
+<div class="note">
+  <strong>Hinweis Domizil:</strong> Falls die Geschäftsadresse beim Inhaber privat oder bei einem Dritten liegt,
+  braucht es eine schriftliche Domizilhalter-Erklärung. Diese erstellt der Notar.
+</div>
+
+<h2>6. Bekanntmachungen und Geschäftsjahr</h2>
+<ul>
+  <li>Bekanntmachungen erfolgen rechtsverbindlich im Schweizerischen Handelsamtsblatt (SHAB).</li>
+  <li>Geschäftsjahr: 1. Januar bis 31. Dezember.</li>
+  <li>Erstes Geschäftsjahr verkürzt: vom Tag der HR-Eintragung bis zum 31. Dezember desselben Jahres.</li>
+  <li>Generalversammlung: jährlich, spätestens 6 Monate nach Abschluss des Geschäftsjahrs (i.d.R. bis Ende Juni).</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>7. Checkliste zum Notar-Termin</h2>
+<h3>Was du mitbringst:</h3>
+<table>
+  <tr>
+    <th style="width: 30px">✓</th>
+    <th>Dokument / Information</th>
+  </tr>
+  <tr><td><span class="checkbox"></span></td><td>Gültiger Pass oder ID</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Wohnsitzbestätigung (nicht älter als 6 Monate)</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Bestätigung Sperrkonto: CHF 20'000.– eingezahlt</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Geschäftsadresse fixiert (Mietvertrag oder Domizil-Vereinbarung)</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Diese Vorbereitungs-Unterlage (mit ausgefüllten Platzhaltern)</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>AHV-Nummer</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Strafregister-Auszug (für Konzession nachher empfehlenswert)</td></tr>
+</table>
+
+<h3>Was der Notar vorbereitet:</h3>
+<ul>
+  <li>Statuten (Endfassung mit deinen Angaben)</li>
+  <li>Öffentliche Beurkundung des Gründungsakts</li>
+  <li>Stampa-Erklärung (Erklärung über Sacheinlagen — bei reiner Geldgründung gibt es keine)</li>
+  <li>Lex-Friedrich-Erklärung (Erklärung zu Immobilienerwerb durch Ausländer)</li>
+  <li>Annahmeerklärung des Geschäftsführers</li>
+  <li>Anmeldung beim Handelsregisteramt</li>
+</ul>
+
+<h2>8. Schritte nach Handelsregister-Eintragung</h2>
+<table>
+  <tr>
+    <th style="width: 30px">✓</th>
+    <th>Schritt</th>
+    <th>Bei wem</th>
+  </tr>
+  <tr><td><span class="checkbox"></span></td><td>AHV-Anmeldung als Arbeitgeber</td><td>AHV-Ausgleichskasse des Kantons</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>BVG / Pensionskasse (ab Jahreslohn CHF 22'050)</td><td>Sammelstiftung deiner Wahl</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Suva / Unfallversicherung</td><td>Suva</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>MWST-Anmeldung (ab Jahresumsatz CHF 100'000)</td><td>Eidgenössische Steuerverwaltung (ESTV)</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Gewerbliche Motorfahrzeug-Haftpflicht</td><td>Versicherung (z.B. Mobiliar, AXA, Zurich, Helvetia)</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Taxi-Konzession / Bewilligung Personenbeförderung</td><td>Strassenverkehrsamt des Sitz-Kantons</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Taxiausweis für Fahrer</td><td>Strassenverkehrsamt / Polizei</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Kassenverträge für Krankenfahrt-Abrechnung (optional)</td><td>Branchenverband ASTAG oder direkt bei Krankenkassen</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Bankkonto VitaWay GmbH (Sperrkonto → Geschäftskonto)</td><td>Schweizer Bank</td></tr>
+  <tr><td><span class="checkbox"></span></td><td>Buchhaltungs-Setup</td><td>Treuhänder oder Software (Bexio, Klara, Banana)</td></tr>
+</table>
+
+<h2>9. Geschätzte Gründungskosten</h2>
+<table>
+  <tr><th>Posten</th><th style="width: 130px; text-align: right">CHF</th></tr>
+  <tr><td>Notargebühren (Beurkundung + Statuten-Erstellung)</td><td style="text-align: right">1'500 – 3'000</td></tr>
+  <tr><td>Handelsregister-Eintragung</td><td style="text-align: right">600 – 800</td></tr>
+  <tr><td>Sperrkonto-Spesen Bank</td><td style="text-align: right">0 – 200</td></tr>
+  <tr><td>Statuten-Beglaubigung (falls separat)</td><td style="text-align: right">100 – 300</td></tr>
+  <tr><td>Erste Auslagen (Geschäftspapiere, Visitenkarten, etc.)</td><td style="text-align: right">200 – 500</td></tr>
+  <tr><td><strong>Total geschätzt</strong></td><td style="text-align: right"><strong>2'400 – 4'800</strong></td></tr>
+  <tr><td colspan="2" style="font-style: italic; font-size: 9.5pt; color: #475569">Hinzu kommen Kosten für Konzessions-Antrag, Versicherungen und das eigentliche Stammkapital von CHF 20'000.– (das aber bei der Gesellschaft verbleibt).</td></tr>
+</table>
+
+<h2>10. Wichtige Hinweise</h2>
+<div class="note">
+  <strong>1. Diese Unterlagen sind eine Vorbereitungs-Vorlage.</strong> Der Notar erstellt die rechtlich verbindlichen Dokumente (Statuten, öffentliche Beurkundung).
+</div>
+<div class="note">
+  <strong>2. Konzession Personenbeförderung:</strong> Taxi und gewerbsmässige Personenbeförderung sind kantonal/kommunal geregelt. Erkundige dich VOR der Gründung beim Strassenverkehrsamt deines Sitz-Kantons über Voraussetzungen und Fristen.
+</div>
+<div class="note">
+  <strong>3. Versicherung:</strong> Eine private Motorfahrzeug-Haftpflicht deckt gewerblichen Personentransport NICHT ab. Vor Aufnahme der Tätigkeit muss eine gewerbliche Lösung abgeschlossen sein.
+</div>
+<div class="note">
+  <strong>4. Krankenkassen-Abrechnung:</strong> Direktabrechnung mit Krankenkassen für medizinisch indizierte Fahrten setzt Verträge mit den einzelnen Kassen voraus. Branchenverband (ASTAG / IVR) kann hier vermitteln.
+</div>
+<div class="note">
+  <strong>5. Statuten-Vorlage des Bundes:</strong> Kostenlose Musterstatuten für GmbH auf <em>kmu.admin.ch</em>. Der Notar wird daraus deine individuellen Statuten erstellen.
+</div>
+
+<div class="footer">
+  VitaWay · Vorbereitung Notar-Termin · vitaway.ch · info@vitaway.ch · +41 76 606 41 15
+</div>
+
+</div>
+
+<script>
+  document.getElementById("today").textContent = new Date().toLocaleDateString("de-CH", {
+    day: "2-digit", month: "long", year: "numeric"
+  });
+</script>
+
+</body>
+</html>
