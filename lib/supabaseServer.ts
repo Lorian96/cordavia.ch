@@ -16,6 +16,18 @@ export function getSupabaseServer() {
   });
 }
 
+export type Callback = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  preferred_time: string | null;
+  note: string | null;
+  status: "pending" | "done";
+  created_at: string;
+  done_at: string | null;
+};
+
 export type Booking = {
   id: string;
   booking_number: string;

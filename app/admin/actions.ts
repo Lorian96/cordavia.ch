@@ -67,3 +67,33 @@ export async function deleteBooking(id: string) {
   revalidatePath("/admin");
   return { ok: true };
 }
+
+export async function markCallbackDone(id: string) {
+  const sb = getSupabaseServer();
+  const { error } = await sb
+    .from("callbacks")
+    .update({ status: "done", done_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+export async function reopenCallback(id: string) {
+  const sb = getSupabaseServer();
+  const { error } = await sb
+    .from("callbacks")
+    .update({ status: "pending", done_at: null })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+export async function deleteCallback(id: string) {
+  const sb = getSupabaseServer();
+  const { error } = await sb.from("callbacks").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin");
+  return { ok: true };
+}
