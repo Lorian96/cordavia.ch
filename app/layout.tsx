@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import { PHONE_DISPLAY, EMAIL } from "@/lib/contact";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+// Display-Schrift für Überschriften – charaktervoll, aber sehr gut lesbar (Senioren).
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
 
@@ -102,7 +108,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de-CH" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="de-CH" className={`${geistSans.variable} ${bricolage.variable} h-full antialiased`}>
       <head>
         <script
           type="application/ld+json"

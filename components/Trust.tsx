@@ -1,4 +1,5 @@
 import { Shield, Clock, HeartPulse, Check } from "./icons";
+import { Eyebrow } from "./Eyebrow";
 import type { ReactNode } from "react";
 
 type Pillar = {
@@ -39,9 +40,9 @@ export function Trust() {
     <section id="vertrauen" className="py-20 sm:py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-navy-50 text-navy-900 font-semibold text-sm mb-4">
-            Über uns
-          </span>
+          <div className="mb-5 flex justify-center">
+            <Eyebrow>Über uns</Eyebrow>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-navy-900 mb-4">
             Verlässlich. Menschlich. Professionell.
           </h2>

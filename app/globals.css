@@ -7,15 +7,18 @@
   --color-navy-700: #1d3f74;
   --color-navy-50: #eef3fa;
 
+  --color-teal-700: #0f766e;
+  --color-teal-600: #0d9488;
   --color-teal-500: #14b8a6;
   --color-teal-400: #2dd4bf;
   --color-teal-300: #5eead4;
   --color-teal-50: #ecfdf8;
 
   --color-surface: #ffffff;
-  --color-surface-muted: #f5f9fc;
+  --color-surface-muted: #f4f8fb;
 
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-bricolage), var(--font-geist-sans), system-ui, sans-serif;
 
   --text-base: 1.1875rem;
   --text-lg: 1.3125rem;
@@ -42,6 +45,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Display-Schrift für alle Überschriften – trägt die Persönlichkeit der Marke */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
 /* Mobile: leicht reduzieren damit es passt aber trotzdem gut lesbar bleibt */
 @media (max-width: 640px) {
   :root {
@@ -55,7 +64,15 @@ body {
   border-radius: 4px;
 }
 
-/* Larger tap targets for senior users */
+/* Larger tap targets for senior users.
+   Hinweis: min-height wirkt nur auf block/inline-flex-Elemente (Buttons/CTAs),
+   nicht auf reine Inline-Textlinks – daher unbedenklich für Links im Fliesstext. */
 button, a {
   min-height: 44px;
+}
+
+/* Dezentes Einblenden (z. B. Mobile-Menü) – nur wenn Bewegung erlaubt ist */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

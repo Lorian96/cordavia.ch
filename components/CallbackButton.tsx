@@ -121,7 +121,7 @@ export function CallbackButton() {
                   <button
                     type="button"
                     onClick={resetAndClose}
-                    className="text-navy-800/60 hover:text-navy-900 text-2xl leading-none p-1"
+                    className="text-navy-800/75 hover:text-navy-900 text-2xl leading-none p-1"
                     aria-label="Schliessen"
                   >
                     ×
@@ -168,7 +168,7 @@ export function CallbackButton() {
                   </label>
                   <label className="block">
                     <span className="block text-base font-semibold mb-1.5">
-                      Wann sollen wir anrufen? <span className="text-navy-800/60 font-normal">(optional)</span>
+                      Wann sollen wir anrufen? <span className="text-navy-800/75 font-normal">(optional)</span>
                     </span>
                     <input
                       type="text"
@@ -180,7 +180,7 @@ export function CallbackButton() {
                   </label>
                   <label className="block">
                     <span className="block text-base font-semibold mb-1.5">
-                      Worum geht's? <span className="text-navy-800/60 font-normal">(optional)</span>
+                      Worum geht's? <span className="text-navy-800/75 font-normal">(optional)</span>
                     </span>
                     <textarea
                       value={note}

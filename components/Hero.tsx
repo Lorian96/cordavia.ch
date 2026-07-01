@@ -1,25 +1,53 @@
 import { Phone, WhatsApp, Calendar, Shield, HeartPulse, Check } from "./icons";
 import { PHONE_DISPLAY, PHONE_TEL, PHONE_WHATSAPP, SERVICE_REGION_LABEL } from "@/lib/contact";
 import { CallbackButton } from "./CallbackButton";
+import { Reveal } from "./Reveal";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900 text-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white">
+      {/* Signatur: die „Route" – eine ruhige, statische Wegstrecke von Abhol- zu Zielpunkt */}
       <div
         aria-hidden
-        className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,_#14b8a6_0%,_transparent_40%),radial-gradient(circle_at_80%_80%,_#2dd4bf_0%,_transparent_40%)]"
+        className="absolute inset-0 opacity-25 bg-[radial-gradient(circle_at_15%_100%,_#14b8a6_0%,_transparent_45%),radial-gradient(circle_at_85%_0%,_#13315c_0%,_transparent_50%)]"
       />
+      <svg
+        aria-hidden
+        className="absolute inset-0 h-full w-full text-teal-300"
+        viewBox="0 0 800 600"
+        preserveAspectRatio="xMidYMid slice"
+        fill="none"
+      >
+        <path
+          d="M -40 520 C 180 520 220 300 420 300 S 700 140 860 120"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeDasharray="1 16"
+          strokeLinecap="round"
+          opacity="0.35"
+        />
+        {/* Abholpunkt */}
+        <circle cx="60" cy="470" r="7" fill="currentColor" opacity="0.6" />
+        <circle cx="60" cy="470" r="16" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+        {/* Zielpunkt */}
+        <circle cx="760" cy="150" r="7" fill="currentColor" opacity="0.6" />
+        <circle cx="760" cy="150" r="16" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+      </svg>
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/15 border border-teal-400/30 px-4 py-2 text-teal-300 font-medium mb-6">
-            <Shield className="h-5 w-5" />
-            <span>24h erreichbar · Versichert · Pünktlich</span>
-          </div>
+          <Reveal>
+            <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/15 border border-teal-400/30 px-4 py-2 text-teal-300 font-medium mb-6">
+              <Shield className="h-5 w-5" />
+              <span>24h erreichbar · Versichert · Pünktlich</span>
+            </div>
+          </Reveal>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-6">
-            Wir kümmern uns.{" "}
-            <span className="text-teal-300">Auf jedem Weg.</span>
-          </h1>
+          <Reveal>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-6">
+              Wir kümmern uns.{" "}
+              <span className="text-teal-300">Auf jedem Weg.</span>
+            </h1>
+          </Reveal>
 
           <p className="text-xl sm:text-2xl text-navy-50/90 mb-3 leading-relaxed">
             Taxi · Krankenfahrten · Liegend- &amp; Rollstuhltransporte
@@ -52,7 +80,7 @@ export function Hero() {
           <p className="text-base text-teal-300 font-semibold mb-3">
             So erreichen Sie uns — wählen Sie was Ihnen am liebsten ist:
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <Reveal className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <a
               href={`tel:${PHONE_TEL}`}
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-navy-50 text-navy-900 font-bold px-6 py-5 text-lg sm:text-xl shadow-xl ring-2 ring-teal-300 transition"
@@ -76,17 +104,29 @@ export function Hero() {
               <WhatsApp className="h-7 w-7" />
               <span>WhatsApp</span>
             </a>
-          </div>
-          <p className="text-base text-navy-50/80 mt-3 font-semibold">
-            <Phone className="inline h-5 w-5 mr-1 mb-1" />
-            {PHONE_DISPLAY} — Tag &amp; Nacht
-          </p>
+          </Reveal>
+          <a
+            href={`tel:${PHONE_TEL}`}
+            className="group mt-4 inline-flex items-center gap-3 text-navy-50/90 hover:text-white transition"
+          >
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-teal-500/15 ring-1 ring-teal-400/30 group-hover:bg-teal-500/25 transition">
+              <Phone className="h-5 w-5 text-teal-300" />
+            </span>
+            <span>
+              <span className="block text-xs uppercase tracking-wider text-teal-300 font-semibold">
+                Direkt anrufen · Tag &amp; Nacht
+              </span>
+              <span className="block text-2xl font-bold tracking-tight tabular-nums">
+                {PHONE_DISPLAY}
+              </span>
+            </span>
+          </a>
           <div className="mt-4">
             <CallbackButton />
           </div>
         </div>
 
-        <div className="hidden lg:block">
+        <Reveal className="hidden lg:block">
           <div className="relative">
             <div className="absolute -inset-4 bg-teal-500/10 rounded-3xl blur-2xl" />
             <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 shadow-2xl">
@@ -109,7 +149,7 @@ export function Hero() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

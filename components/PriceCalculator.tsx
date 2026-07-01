@@ -73,7 +73,7 @@ export function PriceCalculator() {
             onChange={(e) => setKm(parseInt(e.target.value, 10))}
             className="w-full accent-teal-500"
           />
-          <div className="flex justify-between text-xs text-navy-800/60 mt-1">
+          <div className="flex justify-between text-xs text-navy-800/75 mt-1">
             <span>1 km</span>
             <span>50 km</span>
             <span>100 km</span>
@@ -96,7 +96,7 @@ export function PriceCalculator() {
             onChange={(e) => setWaitingMin(parseInt(e.target.value, 10))}
             className="w-full accent-teal-500"
           />
-          <div className="flex justify-between text-xs text-navy-800/60 mt-1">
+          <div className="flex justify-between text-xs text-navy-800/75 mt-1">
             <span>0 Min</span>
             <span>60 Min</span>
             <span>120 Min</span>
@@ -113,7 +113,7 @@ export function PriceCalculator() {
           />
           <span className="text-sm text-navy-900">
             Nacht (22-06 Uhr) oder Sonn-/Feiertag
-            <span className="block text-xs text-navy-800/60">
+            <span className="block text-xs text-navy-800/75">
               +{SURCHARGE_PERCENT}% Zuschlag
             </span>
           </span>
@@ -143,14 +143,14 @@ export function PriceCalculator() {
               </span>
             </div>
             {result.appliedMinimum && (
-              <p className="text-xs text-navy-800/65 italic">
+              <p className="text-xs text-navy-800/75 italic">
                 Mindestumsatz pro Fahrt angewendet.
               </p>
             )}
           </div>
         </div>
 
-        <p className="text-xs text-navy-800/60">
+        <p className="text-xs text-navy-800/75">
           Dies ist eine unverbindliche Schätzung. Der endgültige Preis kann je nach
           Route, Verkehrslage und besonderen Anforderungen variieren. Wir
           bestätigen Ihnen den finalen Preis vor der Fahrt.

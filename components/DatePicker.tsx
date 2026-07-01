@@ -125,7 +125,7 @@ export function DatePicker({
           </svg>
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1 mb-1 text-xs text-navy-800/60 text-center font-semibold uppercase">
+      <div className="grid grid-cols-7 gap-1 mb-1 text-xs text-navy-800/75 text-center font-semibold uppercase">
         {WEEKDAYS.map((w) => (
           <span key={w}>{w}</span>
         ))}
@@ -169,7 +169,7 @@ export function DatePicker({
           );
         })}
       </div>
-      <div className="flex items-center gap-4 mt-4 text-xs text-navy-800/65">
+      <div className="flex items-center gap-4 mt-4 text-xs text-navy-800/75">
         <span className="inline-flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded bg-teal-500" />
           gewählt

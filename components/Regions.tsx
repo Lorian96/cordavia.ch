@@ -1,4 +1,5 @@
 import { MapPin } from "./icons";
+import { Eyebrow } from "./Eyebrow";
 import { SERVICE_CANTONS } from "@/lib/contact";
 
 type RegionContent = {
@@ -48,9 +49,9 @@ export function Regions() {
     <section id="regionen" className="py-20 sm:py-24 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-12">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 text-teal-500 font-semibold text-sm mb-4">
-            Service-Region
-          </span>
+          <div className="mb-5">
+            <Eyebrow>Service-Region</Eyebrow>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-navy-900 mb-4">
             Wir fahren in vier Kantonen.
           </h2>
@@ -78,7 +79,7 @@ export function Regions() {
                     <h3 className="text-2xl font-bold text-navy-900">
                       Kanton {canton.name}
                     </h3>
-                    <p className="text-sm font-mono text-navy-800/60 uppercase tracking-wider">
+                    <p className="text-sm font-mono text-navy-800/75 uppercase tracking-wider">
                       {canton.code}
                     </p>
                   </div>

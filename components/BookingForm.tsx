@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   Check,
@@ -575,6 +576,23 @@ function DateTimeStep({
     return { ok: true, reason: null, suggestion: null };
   }, [booking.time, booking.date, todayStr, nowMinutes, existingMins, availability.bufferMinutes, availability.serviceWindow, serviceStartMin, serviceEndMin]);
 
+  // Schnellauswahl: verfügbare Zeiten im 30-Min-Raster – gross tappbar für Senioren.
+  // Zeigt nur Zeiten in der Zukunft und ohne Konflikt (45-Min-Puffer).
+  const quickSlots = useMemo(() => {
+    if (!booking.date) return [];
+    const slots: string[] = [];
+    const startBase = Math.ceil(serviceStartMin / 30) * 30;
+    for (let m = startBase; m <= serviceEndMin; m += 30) {
+      if (booking.date === todayStr && m <= nowMinutes) continue;
+      const conflict = existingMins.some(
+        (tA) => Math.abs(m - tA) < availability.bufferMinutes
+      );
+      if (conflict) continue;
+      slots.push(minToTime(m));
+    }
+    return slots;
+  }, [booking.date, todayStr, nowMinutes, existingMins, availability.bufferMinutes, serviceStartMin, serviceEndMin]);
+
   const dateErr =
     showErrors && (booking.date === "" || booking.date < minDate);
   const timeErr =
@@ -597,7 +615,10 @@ function DateTimeStep({
 
       {availability.error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-900 text-sm mb-6">
-          <p className="font-semibold mb-1">⚠ Verfügbarkeit nicht ladbar</p>
+          <p className="font-semibold mb-1 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden />
+            Verfügbarkeit nicht ladbar
+          </p>
           <p>
             {availability.error}{" "}
             <a href={`tel:${PHONE_TEL}`} className="font-bold underline whitespace-nowrap">
@@ -645,9 +666,37 @@ function DateTimeStep({
             </label>
 
             {!availability.loaded && (
-              <div className="text-navy-800/65 text-sm flex items-center gap-2 py-3">
+              <div className="text-navy-800/75 text-sm flex items-center gap-2 py-3">
                 <span className="inline-block h-3 w-3 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
                 Verfügbarkeit wird geladen…
+              </div>
+            )}
+
+            {availability.loaded && quickSlots.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-semibold text-navy-900 mb-2">
+                  Oder schnell eine freie Zeit wählen:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {quickSlots.map((slot) => {
+                    const active = booking.time === slot;
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => update("time", slot)}
+                        aria-pressed={active}
+                        className={`min-w-[4.5rem] px-4 py-3 rounded-xl border-2 text-lg font-bold transition ${
+                          active
+                            ? "border-teal-500 bg-teal-500 text-navy-950"
+                            : "border-navy-50 bg-white text-navy-900 hover:border-teal-400"
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -663,7 +712,7 @@ function DateTimeStep({
             )}
 
             {existingTimes.length > 0 && (
-              <p className="text-sm text-navy-800/65 mt-3">
+              <p className="text-sm text-navy-800/75 mt-3">
                 Bereits gebuchte Termine an diesem Tag:{" "}
                 <span className="font-mono text-navy-900 font-semibold">
                   {existingTimes.join(", ")}
@@ -806,7 +855,7 @@ function LabeledField({
         aria-invalid={Boolean(error)}
       />
       {hint && !error && (
-        <p className="text-sm text-navy-800/60 mt-1.5">{hint}</p>
+        <p className="text-sm text-navy-800/75 mt-1.5">{hint}</p>
       )}
       {error && (
         <p className="text-sm text-red-700 mt-1.5">{error}</p>

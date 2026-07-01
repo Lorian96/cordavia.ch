@@ -1,4 +1,6 @@
 import { HeartPulse, Stretcher, Wheelchair, TaxiCar, ArrowRight } from "./icons";
+import { Reveal } from "./Reveal";
+import { Eyebrow } from "./Eyebrow";
 import type { ReactNode } from "react";
 
 type Service = {
@@ -63,10 +65,10 @@ export function Services() {
   return (
     <section id="leistungen" className="py-20 sm:py-24 bg-surface-muted">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mb-14">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 text-teal-500 font-semibold text-sm mb-4">
-            Unsere Leistungen
-          </span>
+        <Reveal className="max-w-3xl mb-14">
+          <div className="mb-5">
+            <Eyebrow>Unsere Leistungen</Eyebrow>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-navy-900 mb-4">
             Vier Leistungen. Ein verlässlicher Partner.
           </h2>
@@ -75,13 +77,13 @@ export function Services() {
             Liegend- und Rollstuhltransporten – wir bringen Sie pünktlich,
             sicher und mit Herz ans Ziel.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service) => (
-            <article
+            <Reveal
               key={service.title}
-              className="group relative bg-white rounded-2xl p-7 shadow-md hover:shadow-xl transition border border-navy-50 flex flex-col"
+              className="group relative bg-white rounded-2xl p-7 shadow-md hover:shadow-lg transition border border-navy-50 flex flex-col"
             >
               <div className="inline-flex h-14 w-14 items-center justify-center rounded-xl bg-navy-900 text-teal-300 mb-5">
                 {service.icon}
@@ -108,12 +110,12 @@ export function Services() {
               </ul>
               <a
                 href="#buchung"
-                className="mt-auto inline-flex items-center gap-2 text-navy-900 font-semibold hover:text-teal-500 transition"
+                className="mt-auto inline-flex items-center gap-2 text-navy-900 font-semibold hover:text-teal-700 hover:gap-3 transition-all"
               >
                 Jetzt buchen
                 <ArrowRight className="h-5 w-5" />
               </a>
-            </article>
+            </Reveal>
           ))}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Phone } from "./icons";
+import { MobileNav } from "./MobileNav";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/contact";
 
 const NAV_ITEMS = [
@@ -21,7 +22,7 @@ export function Header() {
           >
             V
           </span>
-          <span className="hidden sm:inline">VitaWay</span>
+          <span>VitaWay</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-base lg:text-lg font-medium text-navy-800">
@@ -29,23 +30,26 @@ export function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className="hover:text-teal-500 transition"
+              className="hover:text-teal-700 transition"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <a
-          href={`tel:${PHONE_TEL}`}
-          className="inline-flex items-center gap-2 rounded-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-5 py-3 text-base sm:text-lg transition shadow-md"
-          aria-label={`Jetzt anrufen ${PHONE_DISPLAY}`}
-        >
-          <Phone className="h-5 w-5" />
-          <span className="hidden lg:inline">{PHONE_DISPLAY}</span>
-          <span className="hidden sm:inline lg:hidden">24h Hotline</span>
-          <span className="sm:hidden">Anrufen</span>
-        </a>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <a
+            href={`tel:${PHONE_TEL}`}
+            className="inline-flex items-center gap-2 rounded-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-5 py-3 text-base sm:text-lg transition shadow-md"
+            aria-label={`Jetzt anrufen ${PHONE_DISPLAY}`}
+          >
+            <Phone className="h-5 w-5" />
+            <span className="hidden lg:inline">{PHONE_DISPLAY}</span>
+            <span className="hidden sm:inline lg:hidden">24h Hotline</span>
+            <span className="sm:hidden">Anrufen</span>
+          </a>
+          <MobileNav items={NAV_ITEMS} />
+        </div>
       </div>
     </header>
   );

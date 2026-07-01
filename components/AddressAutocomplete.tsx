@@ -212,13 +212,13 @@ export function AddressAutocomplete({
           className="absolute z-20 mt-2 w-full bg-white border border-navy-100 rounded-2xl shadow-xl max-h-80 overflow-y-auto"
         >
           {loading && (
-            <li className="px-4 py-3 text-navy-800/60 text-sm flex items-center gap-2">
+            <li className="px-4 py-3 text-navy-800/75 text-sm flex items-center gap-2">
               <span className="inline-block h-3 w-3 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
               Suche Adressen…
             </li>
           )}
           {!loading && results.length === 0 && query.trim().length >= 3 && (
-            <li className="px-4 py-3 text-navy-800/60 text-sm">
+            <li className="px-4 py-3 text-navy-800/75 text-sm">
               Keine Treffer — bitte vollständige Adresse eintippen, z.B.
               „Bahnhofstrasse 1, 8001 Zürich".
             </li>
@@ -232,7 +232,7 @@ export function AddressAutocomplete({
                   className="w-full text-left px-4 py-3 hover:bg-teal-50 text-navy-900 border-b border-navy-50 last:border-0 transition"
                 >
                   <div className="font-semibold">{r.primary}</div>
-                  <div className="text-sm text-navy-800/65">{r.secondary}</div>
+                  <div className="text-sm text-navy-800/75">{r.secondary}</div>
                 </button>
               </li>
             ))}
